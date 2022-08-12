@@ -96,15 +96,57 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9C2A0EFC28A6A0E0001FA4E1 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				9C2A0F0028A6A38D001FA4E1 /* Details */,
+				9C2A0EFF28A6A374001FA4E1 /* List */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		9C2A0EFD28A6A136001FA4E1 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E7AE6A9226B81F510059FB12 /* Assets.xcassets */,
+				E7878C1F26BACF3E00CF1DB8 /* Fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		9C2A0EFE28A6A15F001FA4E1 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E7B8690A287C4701000D2C2C /* GradientView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9C2A0EFF28A6A374001FA4E1 /* List */ = {
+			isa = PBXGroup;
+			children = (
+				E7AE6A8D26B81F4F0059FB12 /* DestinationsViewController.swift */,
+			);
+			path = List;
+			sourceTree = "<group>";
+		};
+		9C2A0F0028A6A38D001FA4E1 /* Details */ = {
+			isa = PBXGroup;
+			children = (
+				E710FAC42885AF2E00326EEF /* DestinationDetailsViewController.swift */,
+			);
+			path = Details;
+			sourceTree = "<group>";
+		};
 		E7878C1F26BACF3E00CF1DB8 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				E710FABB2885AB4000326EEF /* Fonts.swift */,
+				E7878C2326BACF3E00CF1DB8 /* Averta-Bold.otf */,
+				E7878C2226BACF3E00CF1DB8 /* Averta-ExtraBold.otf */,
 				E7878C2026BACF3E00CF1DB8 /* Averta-Light.otf */,
 				E7878C2126BACF3E00CF1DB8 /* Averta-Regular.otf */,
-				E7878C2226BACF3E00CF1DB8 /* Averta-ExtraBold.otf */,
-				E7878C2326BACF3E00CF1DB8 /* Averta-Bold.otf */,
 				E7878C2426BACF3E00CF1DB8 /* Averta-Semibold.otf */,
+				E710FABB2885AB4000326EEF /* Fonts.swift */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -150,17 +192,15 @@
 			isa = PBXGroup;
 			children = (
 				E7AE6A8926B81F4F0059FB12 /* AppDelegate.swift */,
-				E7AE6A8B26B81F4F0059FB12 /* SceneDelegate.swift */,
-				E7AE6A8D26B81F4F0059FB12 /* DestinationsViewController.swift */,
-				E710FAC42885AF2E00326EEF /* DestinationDetailsViewController.swift */,
-				E7B8690A287C4701000D2C2C /* GradientView.swift */,
-				E7878C1C26BACE2400CF1DB8 /* Styles.swift */,
-				E7878C1F26BACF3E00CF1DB8 /* Fonts */,
-				E794201826B853E50032C12E /* Models */,
-				E794201526B83BE90032C12E /* Services */,
-				E7AE6A9226B81F510059FB12 /* Assets.xcassets */,
-				E7AE6A9426B81F510059FB12 /* LaunchScreen.storyboard */,
 				E7AE6A9726B81F510059FB12 /* Info.plist */,
+				E7AE6A9426B81F510059FB12 /* LaunchScreen.storyboard */,
+				E794201826B853E50032C12E /* Models */,
+				9C2A0EFD28A6A136001FA4E1 /* Resources */,
+				E7AE6A8B26B81F4F0059FB12 /* SceneDelegate.swift */,
+				9C2A0EFC28A6A0E0001FA4E1 /* Scenes */,
+				E794201526B83BE90032C12E /* Services */,
+				E7878C1C26BACE2400CF1DB8 /* Styles.swift */,
+				9C2A0EFE28A6A15F001FA4E1 /* Views */,
 			);
 			path = DestinationGuide;
 			sourceTree = "<group>";
