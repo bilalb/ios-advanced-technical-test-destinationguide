@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 @IBDesignable
-public class GradientView: UIView {
+class GradientView: UIView {
     @IBInspectable var startColor:   UIColor = .black { didSet { updateColors() }}
     @IBInspectable var endColor:     UIColor = .white { didSet { updateColors() }}
     @IBInspectable var startLocation: Double =   0.05 { didSet { updateLocations() }}
@@ -17,7 +17,7 @@ public class GradientView: UIView {
     @IBInspectable var horizontalMode:  Bool =  false { didSet { updatePoints() }}
     @IBInspectable var diagonalMode:    Bool =  false { didSet { updatePoints() }}
     
-    override public class var layerClass: AnyClass { CAGradientLayer.self }
+    override class var layerClass: AnyClass { CAGradientLayer.self }
 
     var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
 
@@ -36,7 +36,7 @@ public class GradientView: UIView {
     func updateColors() {
         gradientLayer.colors = [startColor.cgColor, endColor.cgColor]
     }
-    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         updatePoints()
         updateLocations()

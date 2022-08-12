@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-public enum EvaneosFont {
+enum EvaneosFont {
     case defaultLExtrabold
     case defaultMExtrabold
     case defaultBodyBold
@@ -36,7 +36,7 @@ public enum EvaneosFont {
         }
     }
     
-    public var font: UIFont {
+    var font: UIFont {
         switch self {
         case .defaultLExtrabold: return UIFont.averta(weight: .extraBold, size: 38)
         case .defaultMExtrabold: return UIFont.averta(weight: .extraBold, size: 24)
@@ -49,7 +49,7 @@ public enum EvaneosFont {
         }
     }
     
-    public var lineHeightFromDesignSystem: CGFloat {
+    var lineHeightFromDesignSystem: CGFloat {
         switch self {
         case .defaultLExtrabold: return 36
         case .defaultMExtrabold: return 28
@@ -75,7 +75,7 @@ struct DesignSystemFontModifier: ViewModifier {
     }
 }
 
-public extension View {
+extension View {
     func font(designSystemFont: EvaneosFont) -> some View {
         ModifiedContent(content: self, modifier: DesignSystemFontModifier(designSystemFont: designSystemFont))
     }
