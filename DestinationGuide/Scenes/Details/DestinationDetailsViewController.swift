@@ -10,8 +10,8 @@ import WebKit
 
 class DestinationDetailsController: UIViewController {
     
-    let name: String
-    let webviewUrl: URL
+    private let name: String
+    private let webviewUrl: URL
     
     init(title: String, webviewUrl: URL) {
         self.name = title
@@ -24,13 +24,13 @@ class DestinationDetailsController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    let webView: WKWebView = {
+    private let webView: WKWebView = {
         let webView = WKWebView()
         webView.translatesAutoresizingMaskIntoConstraints = false
         return webView
     }()
     
-    let activityIndicator: UIActivityIndicatorView = {
+    private let activityIndicator: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView(style: .large)
         spinner.color = UIColor.evaneos(color: .veraneos)
         spinner.hidesWhenStopped = true
@@ -78,7 +78,7 @@ class DestinationDetailsController: UIViewController {
 
 extension DestinationDetailsController: WKNavigationDelegate {
     
-    func showActivityIndicator(show: Bool) {
+    private func showActivityIndicator(show: Bool) {
         if show {
             activityIndicator.startAnimating()
         } else {

@@ -9,11 +9,11 @@ import UIKit
 
 class DestinationCell: UICollectionViewCell {
 
-    var dataTask: URLSessionDataTask?
+    private var dataTask: URLSessionDataTask?
 
     //  MARK: - Components
 
-    let labelDestination: UILabel = {
+    private let labelDestination: UILabel = {
         let lbl = UILabel()
         lbl.numberOfLines = 0
         lbl.text = "Asie"
@@ -26,7 +26,7 @@ class DestinationCell: UICollectionViewCell {
     //  Bouton plutôt qu'un label pour pouvoir mettre un padding
     //  Evite d'imbriquer un label dans une UIView
 
-    let labelTag: UIButton = {
+    private let labelTag: UIButton = {
         let lbl = UIButton()
         lbl.setTitle("Test", for: .normal)
         lbl.setTitleColor(.white, for: .normal)
@@ -39,7 +39,7 @@ class DestinationCell: UICollectionViewCell {
         return lbl
     }()
 
-    let stackViewRating: UIStackView = {
+    private let stackViewRating: UIStackView = {
         let stackView = UIStackView(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
@@ -49,14 +49,14 @@ class DestinationCell: UICollectionViewCell {
         return stackView
     }()
 
-    let imageViewBackground: UIImageView = {
+    private let imageViewBackground: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
         return imageView
     }()
 
-    lazy var gradientView: GradientView = {
+    private lazy var gradientView: GradientView = {
         let gradientView = GradientView()
         gradientView.startColor = .black.withAlphaComponent(0)
         gradientView.endColor = .black.withAlphaComponent(0.5)
@@ -101,7 +101,7 @@ class DestinationCell: UICollectionViewCell {
         self.dataTask?.cancel()
     }
 
-    func downloadImage(url: URL) {
+    private func downloadImage(url: URL) {
         self.dataTask?.resume()
 
         self.dataTask = URLSession.shared.dataTask(with: URLRequest(url: url), completionHandler: { data, _, _  in
