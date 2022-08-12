@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DestinationCell: UICollectionViewCell {
+final class DestinationCell: UICollectionViewCell {
 
     private var dataTask: URLSessionDataTask?
 

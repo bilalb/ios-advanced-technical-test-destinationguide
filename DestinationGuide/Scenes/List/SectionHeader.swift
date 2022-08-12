@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SectionHeader: UICollectionReusableView {
+final class SectionHeader: UICollectionReusableView {
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.avertaBold(fontSize: 28)
