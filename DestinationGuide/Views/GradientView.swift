@@ -19,9 +19,9 @@ class GradientView: UIView {
     
     override class var layerClass: AnyClass { CAGradientLayer.self }
 
-    var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
+    private var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
 
-    func updatePoints() {
+    private func updatePoints() {
         if horizontalMode {
             gradientLayer.startPoint = diagonalMode ? .init(x: 1, y: 0) : .init(x: 0, y: 0.5)
             gradientLayer.endPoint   = diagonalMode ? .init(x: 0, y: 1) : .init(x: 1, y: 0.5)
@@ -30,17 +30,19 @@ class GradientView: UIView {
             gradientLayer.endPoint   = diagonalMode ? .init(x: 1, y: 1) : .init(x: 0.5, y: 1)
         }
     }
-    func updateLocations() {
+
+    private func updateLocations() {
         gradientLayer.locations = [startLocation as NSNumber, endLocation as NSNumber]
     }
-    func updateColors() {
+
+    private func updateColors() {
         gradientLayer.colors = [startColor.cgColor, endColor.cgColor]
     }
+
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         updatePoints()
         updateLocations()
         updateColors()
     }
-
 }

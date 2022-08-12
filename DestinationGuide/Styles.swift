@@ -30,8 +30,8 @@ extension UIFont {
 }
 
 extension UIColor {
-    static let defaultSemiTransparencyAlpha: CGFloat = 0.5
-    static let defaultAppBackgroundColor = UIColor.evaneos(color: .paperLight)
+    private static let defaultSemiTransparencyAlpha: CGFloat = 0.5
+    private static let defaultAppBackgroundColor = UIColor.evaneos(color: .paperLight)
 
     enum EvaneosColor {
         case veraneos, veraneosDark, green, greenDark, greenLightest, turquoise, blue, orangeLight, orangeDark, redLight, red, gold, purpleLight, purpleDark, pink, tan, paperLight, inkLighter, paper, inkLight, paperDark, paperDarker, ink, blueLightest
@@ -71,7 +71,7 @@ extension UIColor {
         return UIColor(red: r, green: g, blue: b, alpha: alpha)
     }
 
-    class func evaneosSemiTransparent(color: EvaneosColor) -> UIColor {
+    private class func evaneosSemiTransparent(color: EvaneosColor) -> UIColor {
         return evaneos(color: color, alpha: UIColor.defaultSemiTransparencyAlpha)
     }
 }

@@ -18,14 +18,14 @@ enum EvaneosFont {
     case defaultBodyLink
     case defaultXsLink
     
-    enum AvertaFontWeight {
+    fileprivate enum AvertaFontWeight {
         case light
         case regular
         case semiBold
         case bold
         case extraBold
         
-        var fontSystemName: String {
+        fileprivate var fontSystemName: String {
             switch self {
             case .light: return "Averta-Light"
             case .regular: return "Averta-Regular"
@@ -36,7 +36,7 @@ enum EvaneosFont {
         }
     }
     
-    var font: UIFont {
+    fileprivate var font: UIFont {
         switch self {
         case .defaultLExtrabold: return UIFont.averta(weight: .extraBold, size: 38)
         case .defaultMExtrabold: return UIFont.averta(weight: .extraBold, size: 24)
@@ -49,7 +49,7 @@ enum EvaneosFont {
         }
     }
     
-    var lineHeightFromDesignSystem: CGFloat {
+    fileprivate var lineHeightFromDesignSystem: CGFloat {
         switch self {
         case .defaultLExtrabold: return 36
         case .defaultMExtrabold: return 28
@@ -58,13 +58,13 @@ enum EvaneosFont {
     }
 }
 
-extension UIFont {
+fileprivate extension UIFont {
     static func averta(weight: EvaneosFont.AvertaFontWeight, size: CGFloat) -> UIFont {
         return UIFont(name: weight.fontSystemName, size: size) ?? UIFont.systemFont(ofSize: size, weight: .light)
     }
 }
 
-struct DesignSystemFontModifier: ViewModifier {
+fileprivate struct DesignSystemFontModifier: ViewModifier {
     let designSystemFont: EvaneosFont
     
     func body(content: Content) -> some View {

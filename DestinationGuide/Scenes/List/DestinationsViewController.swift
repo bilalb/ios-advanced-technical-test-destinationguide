@@ -9,9 +9,9 @@ import UIKit
 
 class DestinationsViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    var array: [Destination]!
+    private var array: [Destination]!
     
-    lazy var collectionViewLayout: UICollectionViewLayout = {
+    private lazy var collectionViewLayout: UICollectionViewLayout = {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 16, left: 0, bottom: 32, right: 0)
         layout.minimumLineSpacing = 32
@@ -19,7 +19,7 @@ class DestinationsViewController: UIViewController, UICollectionViewDataSource, 
         return layout
     }()
     
-    lazy var collectionView: UICollectionView = {
+    private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.dataSource = self
