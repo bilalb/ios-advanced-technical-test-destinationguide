@@ -5,12 +5,23 @@
 //  Created by Alexandre Guibert1 on 02/08/2021.
 //
 
+import Combine
 import UIKit
 
 final class DestinationsViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-    
-    private var array: [Destination]!
-    
+    private let viewModel: ViewModel
+    private var cancellables: Set<AnyCancellable> = []
+
+    init(viewModel: ViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private lazy var collectionViewLayout: UICollectionViewLayout = {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 16, left: 0, bottom: 32, right: 0)
@@ -39,28 +50,25 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         view.addSubview(collectionView)
         collectionView.frame = view.frame
         collectionView.dataSource = self
-        
-        DestinationFetchingService().getDestinations { destinations in
-            self.array = Array(try! destinations.get()).sorted(by: { $0.name < $1.name })
-            
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
-        }
+
+        bindViewModel()
+        viewModel.getDestinations()
+    }
+
+    private func bindViewModel() {
+        viewModel.$destinations
+            .sink { [collectionView] _ in collectionView.reloadData() }
+            .store(in: &cancellables)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if array != nil {
-            return array.count
-        }
-        
-        return 0
+        viewModel.destinations?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let desti = array[indexPath.item]
-        if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCell", for: indexPath) as? DestinationCell {
-            cell.setupCell(destination: desti)
+        if let destination = viewModel.destinations?[indexPath.item],
+           let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCell", for: indexPath) as? DestinationCell {
+            cell.setupCell(destination: destination)
             return cell
         }
         return UICollectionViewCell()
@@ -95,9 +103,12 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let desti = array[indexPath.item]
+        guard let destination = viewModel.destinations?[indexPath.item] else {
+            print("Unable to react to item selection at: \(indexPath), because the item does not have any related destination.")
+            return
+        }
         
-        DestinationFetchingService().getDestinationDetails(for: desti.id) { result in
+        DestinationFetchingService().getDestinationDetails(for: destination.id) { result in
             DispatchQueue.main.async {
                 switch result {
                 case let .success(details):
