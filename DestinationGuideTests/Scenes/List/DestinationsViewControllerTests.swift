@@ -10,16 +10,25 @@ import Combine
 import XCTest
 
 final class DestinationsViewControllerTests: XCTestCase {
-    func test_fetchDestinations_onViewDidLoad() {
+    func test_loadsDestinations_onViewDidLoad() {
         // Given
-        let expectation = XCTestExpectation(description: "send get destination request on viewDidLoad")
+        let recentDestinationsExpectation = XCTestExpectation(description: "loads recent destinations")
+        let getDestinationsExpectation = XCTestExpectation(description: "gets destinations")
 
         let sut = DestinationsViewController(
             viewModel: .init(
-                getDestinations: {
-                    expectation.fulfill()
+                recentDestinations: {
+                    recentDestinationsExpectation.fulfill()
 
-                    return Just([Destination.placeholder])
+                    return Just([.placeholder])
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
+                },
+                refreshRecentDestinations: PassthroughSubject<Void, Never>().eraseToAnyPublisher(),
+                getDestinations: {
+                    getDestinationsExpectation.fulfill()
+
+                    return Just([.placeholder])
                         .setFailureType(to: DestinationFetchingServiceError.self)
                         .eraseToAnyPublisher()
                 }
@@ -30,6 +39,6 @@ final class DestinationsViewControllerTests: XCTestCase {
         sut.viewDidLoad()
 
         // Then
-        wait(for: [expectation], timeout: 0.1)
+        wait(for: [recentDestinationsExpectation, getDestinationsExpectation], timeout: 0.1)
     }
 }

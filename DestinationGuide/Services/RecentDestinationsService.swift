@@ -31,6 +31,18 @@ struct RecentDestinationsService {
             userDefaults.set(dataArray, forKey: key)
         }
     }
+
+    func recentDestinations() -> AnyPublisher<[DestinationDetails]?, Error> {
+        do {
+            let recentDestinations = try recentDestinationsArray()
+            return Just(recentDestinations)
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        } catch {
+            return Fail(error: error)
+                .eraseToAnyPublisher()
+        }
+    }
 }
 
 private extension RecentDestinationsService {

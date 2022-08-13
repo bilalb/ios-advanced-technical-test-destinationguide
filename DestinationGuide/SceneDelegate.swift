@@ -19,6 +19,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.rootViewController = UINavigationController(
                 rootViewController: DestinationsViewController(
                     viewModel: .init(
+                        recentDestinations: {
+                            let service = RecentDestinationsService()
+                            return service.recentDestinations()
+                        },
                         getDestinations: {
                             let future = Future<Set<Destination>, DestinationFetchingServiceError> { promise in
                                 service.getDestinations { result in
