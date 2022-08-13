@@ -14,6 +14,7 @@
 		9C2A0F1228A6B91E001FA4E1 /* DestinationsViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2A0F1128A6B91E001FA4E1 /* DestinationsViewControllerTests.swift */; };
 		9C2F4CA228A6BCBF0059AF74 /* DestinationsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2F4CA128A6BCBF0059AF74 /* DestinationsViewModelTests.swift */; };
 		9C2F4CA428A6BE820059AF74 /* Destination+Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2F4CA328A6BE820059AF74 /* Destination+Placeholder.swift */; };
+		9C2F4CA628A7D74D0059AF74 /* DestinationDetails+Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2F4CA528A7D74D0059AF74 /* DestinationDetails+Placeholder.swift */; };
 		E710FABC2885AB4000326EEF /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = E710FABB2885AB4000326EEF /* Fonts.swift */; };
 		E710FAC52885AF2E00326EEF /* DestinationDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E710FAC42885AF2E00326EEF /* DestinationDetailsViewController.swift */; };
 		E7878C1D26BACE2400CF1DB8 /* Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7878C1C26BACE2400CF1DB8 /* Styles.swift */; };
@@ -59,6 +60,7 @@
 		9C2A0F1128A6B91E001FA4E1 /* DestinationsViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationsViewControllerTests.swift; sourceTree = "<group>"; };
 		9C2F4CA128A6BCBF0059AF74 /* DestinationsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationsViewModelTests.swift; sourceTree = "<group>"; };
 		9C2F4CA328A6BE820059AF74 /* Destination+Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Destination+Placeholder.swift"; sourceTree = "<group>"; };
+		9C2F4CA528A7D74D0059AF74 /* DestinationDetails+Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DestinationDetails+Placeholder.swift"; sourceTree = "<group>"; };
 		E710FABB2885AB4000326EEF /* Fonts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
 		E710FAC42885AF2E00326EEF /* DestinationDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationDetailsViewController.swift; sourceTree = "<group>"; };
 		E7878C1C26BACE2400CF1DB8 /* Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Styles.swift; sourceTree = "<group>"; };
@@ -154,6 +156,32 @@
 			path = Details;
 			sourceTree = "<group>";
 		};
+		9C2F4CA728A7D78E0059AF74 /* Placeholders */ = {
+			isa = PBXGroup;
+			children = (
+				9C2F4CA328A6BE820059AF74 /* Destination+Placeholder.swift */,
+				9C2F4CA528A7D74D0059AF74 /* DestinationDetails+Placeholder.swift */,
+			);
+			path = Placeholders;
+			sourceTree = "<group>";
+		};
+		9C2F4CA828A7D7A20059AF74 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				9C2F4CA928A7D7AB0059AF74 /* List */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		9C2F4CA928A7D7AB0059AF74 /* List */ = {
+			isa = PBXGroup;
+			children = (
+				9C2A0F1128A6B91E001FA4E1 /* DestinationsViewControllerTests.swift */,
+				9C2F4CA128A6BCBF0059AF74 /* DestinationsViewModelTests.swift */,
+			);
+			path = List;
+			sourceTree = "<group>";
+		};
 		E7878C1F26BACF3E00CF1DB8 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -224,9 +252,8 @@
 		E7AE6A9F26B81F520059FB12 /* DestinationGuideTests */ = {
 			isa = PBXGroup;
 			children = (
-				9C2F4CA328A6BE820059AF74 /* Destination+Placeholder.swift */,
-				9C2A0F1128A6B91E001FA4E1 /* DestinationsViewControllerTests.swift */,
-				9C2F4CA128A6BCBF0059AF74 /* DestinationsViewModelTests.swift */,
+				9C2F4CA728A7D78E0059AF74 /* Placeholders */,
+				9C2F4CA828A7D7A20059AF74 /* Scenes */,
 			);
 			path = DestinationGuideTests;
 			sourceTree = "<group>";
@@ -396,6 +423,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9C2F4CA428A6BE820059AF74 /* Destination+Placeholder.swift in Sources */,
+				9C2F4CA628A7D74D0059AF74 /* DestinationDetails+Placeholder.swift in Sources */,
 				9C2F4CA228A6BCBF0059AF74 /* DestinationsViewModelTests.swift in Sources */,
 				9C2A0F1228A6B91E001FA4E1 /* DestinationsViewControllerTests.swift in Sources */,
 			);

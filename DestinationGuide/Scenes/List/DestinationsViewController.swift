@@ -68,6 +68,14 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         viewModel.$destinations
             .sink { [collectionView] _ in collectionView.reloadData() }
             .store(in: &cancellables)
+
+        viewModel.$destinationDetails
+            .compactMap { $0 }
+            .sink { [weak self] destinationDetails in
+                let viewController = DestinationDetailsController(title: destinationDetails.name, webviewUrl: destinationDetails.url)
+                self?.navigationController?.pushViewController(viewController, animated: true)
+            }
+            .store(in: &cancellables)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -116,20 +124,7 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
             print("Unable to react to item selection at: \(indexPath), because the item does not have any related destination.")
             return
         }
-        
-        DestinationFetchingService().getDestinationDetails(for: destination.id) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case let .success(details):
-                    self.navigationController?.pushViewController(DestinationDetailsController(title: details.name, webviewUrl: details.url), animated: true)
-                case let .failure(error):
-                    let alert = UIAlertController(title: "Erreur", message: error.localizedDescription, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "Annuler", style: .cancel))
-                    
-                    self.present(alert, animated: true)
-                }
-            }
-            
-        }
+
+        viewModel.getDestinationDetails(for: destination.id)
     }
 }
