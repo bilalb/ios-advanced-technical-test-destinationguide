@@ -56,6 +56,15 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
     }
 
     private func bindViewModel() {
+        viewModel.presentError
+            .sink { [weak self] error in
+                let alert = UIAlertController(title: "Erreur", message: error.localizedDescription, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Annuler", style: .cancel))
+
+                self?.present(alert, animated: true)
+            }
+            .store(in: &cancellables)
+
         viewModel.$destinations
             .sink { [collectionView] _ in collectionView.reloadData() }
             .store(in: &cancellables)

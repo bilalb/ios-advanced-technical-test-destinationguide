@@ -15,7 +15,13 @@ protocol DestinationsViewModelIO {
 extension DestinationsViewController {
     final class ViewModel {
         private let io: DestinationsViewModelIO
+
         @Published private(set) var destinations: [Destination]?
+
+        private let presentErrorSubject = PassthroughSubject<Error, Never>()
+        var presentError: AnyPublisher<Error, Never> {
+            presentErrorSubject.eraseToAnyPublisher()
+        }
 
         init(io: DestinationsViewModelIO) {
             self.io = io
@@ -24,7 +30,10 @@ extension DestinationsViewController {
         func getDestinations() {
             io.getDestinations()
                 .receive(on: DispatchQueue.main)
-                .`catch` { _ in Empty(completeImmediately: true) } // error handling
+                .`catch` { [presentErrorSubject] error -> Empty in
+                    presentErrorSubject.send(error)
+                    return Empty(completeImmediately: true)
+                }
                 .map { Array($0).sorted(by: { $0.name < $1.name }) }
                 .assign(to: &$destinations)
         }
