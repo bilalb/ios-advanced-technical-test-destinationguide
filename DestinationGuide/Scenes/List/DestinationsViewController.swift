@@ -68,14 +68,6 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         viewModel.$cellModels
             .sink { [collectionView] _ in collectionView.reloadData() }
             .store(in: &cancellables)
-
-        viewModel.$destinationDetails
-            .compactMap { $0 }
-            .sink { [weak self] destinationDetails in
-                let viewController = DestinationDetailsController(title: destinationDetails.name, webViewUrl: destinationDetails.url)
-                self?.show(viewController, sender: self)
-            }
-            .store(in: &cancellables)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -125,6 +117,23 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
             return
         }
 
-        viewModel.getDestinationDetails(for: cellModel.id)
+        let viewController = DestinationDetailsController(
+            viewModel: .init(
+                getDestinationDetails: {
+                    let future = Future<DestinationDetails, DestinationFetchingServiceError> { promise in
+                        DestinationFetchingService().getDestinationDetails(for: cellModel.id) { result in
+                            switch result {
+                            case .success(let destinationDetails):
+                                promise(.success(destinationDetails))
+                            case .failure(let error):
+                                promise(.failure(error))
+                            }
+                        }
+                    }
+                    return future.eraseToAnyPublisher()
+                }
+            )
+        )
+        show(viewController, sender: self)
     }
 }

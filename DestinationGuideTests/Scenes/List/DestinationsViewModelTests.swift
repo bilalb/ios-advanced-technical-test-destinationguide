@@ -23,10 +23,6 @@ final class DestinationsViewModelTests: XCTestCase {
                 Just([first, second])
                     .setFailureType(to: DestinationFetchingServiceError.self)
                     .eraseToAnyPublisher()
-            },
-            getDestinationDetails: { _ in
-                Empty(completeImmediately: true, outputType: DestinationDetails.self, failureType: DestinationFetchingServiceError.self)
-                    .eraseToAnyPublisher()
             }
         )
 
@@ -49,10 +45,6 @@ final class DestinationsViewModelTests: XCTestCase {
             getDestinations: {
                 Fail(error: DestinationFetchingServiceError.destinationNotFound)
                     .eraseToAnyPublisher()
-            },
-            getDestinationDetails: { _ in
-                Empty(completeImmediately: true, outputType: DestinationDetails.self, failureType: DestinationFetchingServiceError.self)
-                    .eraseToAnyPublisher()
             }
         )
 
@@ -73,40 +65,5 @@ final class DestinationsViewModelTests: XCTestCase {
             .store(in: &cancellables)
 
         wait(for: [expectation], timeout: 0.1)
-    }
-
-    func test_getDestinationDetails() {
-        // Given
-        let expectation = XCTestExpectation(description: "destination details fetch occurs")
-
-        let sut = DestinationsViewController.ViewModel(
-            getDestinations: {
-                Empty(completeImmediately: true, outputType: Set<Destination>.self, failureType: DestinationFetchingServiceError.self)
-                    .eraseToAnyPublisher()
-            },
-            getDestinationDetails: { id in
-                expectation.fulfill()
-                XCTAssertEqual(id, "42")
-
-                return Just(DestinationDetails.placeholder)
-                    .setFailureType(to: DestinationFetchingServiceError.self)
-                    .eraseToAnyPublisher()
-            }
-        )
-
-        // When
-        sut.getDestinationDetails(for: "42")
-
-        // Then
-        XCTAssertNil(sut.cellModels)
-        XCTAssertNil(sut.destinationDetails)
-
-        DispatchQueue.main.async {
-            XCTAssertNil(sut.cellModels)
-            XCTAssertNotNil(sut.destinationDetails)
-        }
-
-        wait(for: [expectation], timeout: 0.1)
-        XCTAssertEqual(expectation.expectedFulfillmentCount, 1)
     }
 }

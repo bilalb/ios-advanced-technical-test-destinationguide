@@ -22,10 +22,6 @@ final class DestinationsViewControllerTests: XCTestCase {
                     return Just([Destination.placeholder])
                         .setFailureType(to: DestinationFetchingServiceError.self)
                         .eraseToAnyPublisher()
-                },
-                getDestinationDetails: { _ in
-                    Empty(completeImmediately: true, outputType: DestinationDetails.self, failureType: DestinationFetchingServiceError.self)
-                        .eraseToAnyPublisher()
                 }
             )
         )
@@ -35,6 +31,5 @@ final class DestinationsViewControllerTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 0.1)
-        XCTAssertEqual(expectation.expectedFulfillmentCount, 1)
     }
 }

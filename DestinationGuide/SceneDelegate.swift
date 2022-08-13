@@ -31,19 +31,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                 }
                             }
                             return future.eraseToAnyPublisher()
-                        },
-                        getDestinationDetails: { id in
-                            let future = Future<DestinationDetails, DestinationFetchingServiceError> { promise in
-                                service.getDestinationDetails(for: id) { result in
-                                    switch result {
-                                    case .success(let destinationDetails):
-                                        promise(.success(destinationDetails))
-                                    case .failure(let error):
-                                        promise(.failure(error))
-                                    }
-                                }
-                            }
-                            return future.eraseToAnyPublisher()
                         }
                     )
                 )
