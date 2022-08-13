@@ -9,8 +9,8 @@ import UIKit
 import SwiftUI
 
 enum EvaneosFont {
-    case defaultLExtrabold
-    case defaultMExtrabold
+    case defaultLExtraBold
+    case defaultMExtraBold
     case defaultBodyBold
     case defaultBodyRegular
     case defaultXsBold
@@ -38,8 +38,8 @@ enum EvaneosFont {
     
     fileprivate var font: UIFont {
         switch self {
-        case .defaultLExtrabold: return UIFont.averta(weight: .extraBold, size: 38)
-        case .defaultMExtrabold: return UIFont.averta(weight: .extraBold, size: 24)
+        case .defaultLExtraBold: return UIFont.averta(weight: .extraBold, size: 38)
+        case .defaultMExtraBold: return UIFont.averta(weight: .extraBold, size: 24)
         case .defaultBodyBold: return UIFont.averta(weight: .bold, size: 18)
         case .defaultBodyRegular: return UIFont.averta(weight: .regular, size: 18)
         case .defaultXsBold: return UIFont.averta(weight: .bold, size: 16)
@@ -51,8 +51,8 @@ enum EvaneosFont {
     
     fileprivate var lineHeightFromDesignSystem: CGFloat {
         switch self {
-        case .defaultLExtrabold: return 36
-        case .defaultMExtrabold: return 28
+        case .defaultLExtraBold: return 36
+        case .defaultMExtraBold: return 28
         case .defaultBodyBold, .defaultBodyRegular, .defaultXsBold, .defaultXsRegular, .defaultBodyLink, .defaultXsLink: return 24
         }
     }

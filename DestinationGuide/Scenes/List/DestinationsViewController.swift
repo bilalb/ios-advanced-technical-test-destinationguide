@@ -72,7 +72,7 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         viewModel.$destinationDetails
             .compactMap { $0 }
             .sink { [weak self] destinationDetails in
-                let viewController = DestinationDetailsController(title: destinationDetails.name, webviewUrl: destinationDetails.url)
+                let viewController = DestinationDetailsController(title: destinationDetails.name, webViewUrl: destinationDetails.url)
                 self?.show(viewController, sender: self)
             }
             .store(in: &cancellables)

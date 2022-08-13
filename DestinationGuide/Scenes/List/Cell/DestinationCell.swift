@@ -14,13 +14,13 @@ final class DestinationCell: UICollectionViewCell {
     //  MARK: - Components
 
     private let labelDestination: UILabel = {
-        let lbl = UILabel()
-        lbl.numberOfLines = 0
-        lbl.text = "Asie"
-        lbl.font = UIFont.avertaExtraBold(fontSize: 38)
-        lbl.textColor = .white
-        lbl.translatesAutoresizingMaskIntoConstraints = false
-        return lbl
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.text = "Asie"
+        label.font = UIFont.avertaExtraBold(fontSize: 38)
+        label.textColor = .white
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
 
     //  Bouton plutôt qu'un label pour pouvoir mettre un padding
