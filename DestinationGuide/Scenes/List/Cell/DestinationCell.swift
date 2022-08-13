@@ -14,29 +14,34 @@ final class DestinationCell: UICollectionViewCell {
     //  MARK: - Components
 
     private let labelDestination: UILabel = {
-        let lbl = UILabel()
-        lbl.numberOfLines = 0
-        lbl.text = "Asie"
-        lbl.font = UIFont.avertaExtraBold(fontSize: 38)
-        lbl.textColor = .white
-        lbl.translatesAutoresizingMaskIntoConstraints = false
-        return lbl
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.text = "Asie"
+        label.font = UIFont.avertaExtraBold(fontSize: 38)
+        label.textColor = .white
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
 
     //  Bouton plutôt qu'un label pour pouvoir mettre un padding
     //  Evite d'imbriquer un label dans une UIView
 
     private let labelTag: UIButton = {
-        let lbl = UIButton()
-        lbl.setTitle("Test", for: .normal)
-        lbl.setTitleColor(.white, for: .normal)
-        lbl.contentEdgeInsets = UIEdgeInsets(top: 3, left: 8, bottom: 3, right: 8)
-        lbl.titleLabel?.font = UIFont.avertaBold(fontSize: 16)
-        lbl.isUserInteractionEnabled = false
-        lbl.backgroundColor = UIColor.evaneos(color: .ink)
-        lbl.layer.cornerRadius = 5
-        lbl.translatesAutoresizingMaskIntoConstraints = false
-        return lbl
+        let button = UIButton()
+        button.setTitle("Test", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.configuration = .filled()
+        button.configuration?.contentInsets = .init(top: 3, leading: 8, bottom: 3, trailing: 8)
+        button.configuration?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = UIFont.avertaBold(fontSize: 16)
+            return outgoing
+        }
+        button.isUserInteractionEnabled = false
+        button.tintColor = UIColor.evaneos(color: .ink)
+        button.layer.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
 
     private let stackViewRating: UIStackView = {

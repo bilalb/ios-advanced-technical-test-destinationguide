@@ -11,11 +11,11 @@ import WebKit
 final class DestinationDetailsController: UIViewController {
     
     private let name: String
-    private let webviewUrl: URL
+    private let webViewUrl: URL
     
-    init(title: String, webviewUrl: URL) {
+    init(title: String, webViewUrl: URL) {
         self.name = title
-        self.webviewUrl = webviewUrl
+        self.webViewUrl = webViewUrl
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -50,7 +50,7 @@ final class DestinationDetailsController: UIViewController {
         
         self.navigationItem.title = name
         
-        let request = URLRequest(url: self.webviewUrl)
+        let request = URLRequest(url: self.webViewUrl)
         self.webView.load(request)
         
     }

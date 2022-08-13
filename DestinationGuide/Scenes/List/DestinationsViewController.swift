@@ -61,7 +61,7 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
                 let alert = UIAlertController(title: "Erreur", message: error.localizedDescription, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Annuler", style: .cancel))
 
-                self?.present(alert, animated: true)
+                self?.showDetailViewController(alert, sender: self)
             }
             .store(in: &cancellables)
 
@@ -72,8 +72,8 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         viewModel.$destinationDetails
             .compactMap { $0 }
             .sink { [weak self] destinationDetails in
-                let viewController = DestinationDetailsController(title: destinationDetails.name, webviewUrl: destinationDetails.url)
-                self?.navigationController?.pushViewController(viewController, animated: true)
+                let viewController = DestinationDetailsController(title: destinationDetails.name, webViewUrl: destinationDetails.url)
+                self?.show(viewController, sender: self)
             }
             .store(in: &cancellables)
     }

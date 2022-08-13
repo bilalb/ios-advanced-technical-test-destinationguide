@@ -22,13 +22,14 @@ final class SectionHeader: UICollectionReusableView {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(titleLabel)
 
-        NSLayoutConstraint.activate([
+        let constraints = [
             self.layoutMarginsGuide.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             self.layoutMarginsGuide.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
             self.layoutMarginsGuide.bottomAnchor.constraint(equalTo: titleLabel.bottomAnchor),
             self.layoutMarginsGuide.topAnchor.constraint(equalTo: titleLabel.topAnchor),
-        ])
-
+        ]
+        constraints.forEach { $0.priority = .defaultHigh }
+        NSLayoutConstraint.activate(constraints)
     }
 
     @available(*, unavailable)
