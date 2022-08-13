@@ -65,7 +65,7 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
             }
             .store(in: &cancellables)
 
-        viewModel.$destinations
+        viewModel.$cellModels
             .sink { [collectionView] _ in collectionView.reloadData() }
             .store(in: &cancellables)
 
@@ -79,13 +79,13 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.destinations?.count ?? 0
+        viewModel.cellModels?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if let destination = viewModel.destinations?[indexPath.item],
+        if let cellModel = viewModel.cellModels?[indexPath.item],
            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCell", for: indexPath) as? DestinationCell {
-            cell.setupCell(destination: destination)
+            cell.setupCell(viewModel: cellModel)
             return cell
         }
         return UICollectionViewCell()
@@ -120,11 +120,11 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let destination = viewModel.destinations?[indexPath.item] else {
+        guard let cellModel = viewModel.cellModels?[indexPath.item] else {
             print("Unable to react to item selection at: \(indexPath), because the item does not have any related destination.")
             return
         }
 
-        viewModel.getDestinationDetails(for: destination.id)
+        viewModel.getDestinationDetails(for: cellModel.id)
     }
 }

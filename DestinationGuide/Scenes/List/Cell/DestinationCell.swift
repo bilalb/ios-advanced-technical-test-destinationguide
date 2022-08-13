@@ -118,12 +118,12 @@ final class DestinationCell: UICollectionViewCell {
 
     //  MARK: - Function
 
-    func setupCell(destination: Destination) {
-        self.labelDestination.text = destination.name
-        self.configureStackView(rating: destination.rating)
-        self.labelTag.setTitle(destination.tag, for: .normal)
+    func setupCell(viewModel: ViewModel) {
+        self.labelDestination.text = viewModel.name
+        self.configureStackView(rating: viewModel.rating)
+        self.labelTag.setTitle(viewModel.tag, for: .normal)
 
-        self.downloadImage(url: destination.picture)
+        self.downloadImage(url: viewModel.imageURL)
 
         self.dataTask?.resume()
     }

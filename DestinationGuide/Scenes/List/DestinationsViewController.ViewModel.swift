@@ -17,7 +17,7 @@ extension DestinationsViewController {
     final class ViewModel {
         private let io: DestinationsViewModelIO
 
-        @Published private(set) var destinations: [Destination]?
+        @Published private(set) var cellModels: [DestinationCell.ViewModel]?
         @Published private(set) var destinationDetails: DestinationDetails?
 
         private let presentErrorSubject = PassthroughSubject<Error, Never>()
@@ -36,8 +36,12 @@ extension DestinationsViewController {
                     presentErrorSubject.send(error)
                     return Empty(completeImmediately: true)
                 }
-                .map { Array($0).sorted(by: { $0.name < $1.name }) }
-                .assign(to: &$destinations)
+                .map {
+                    Array($0)
+                        .sorted(by: { $0.name < $1.name })
+                        .map(DestinationCell.ViewModel.init(destination:))
+                }
+                .assign(to: &$cellModels)
         }
 
         func getDestinationDetails(for id: Destination.ID) {

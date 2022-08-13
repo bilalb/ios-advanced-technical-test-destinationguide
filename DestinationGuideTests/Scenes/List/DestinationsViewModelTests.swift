@@ -34,12 +34,12 @@ final class DestinationsViewModelTests: XCTestCase {
         sut.getDestinations()
 
         // Then
-        XCTAssertNil(sut.destinations)
+        XCTAssertNil(sut.cellModels)
 
         DispatchQueue.main.async {
-            XCTAssertNotNil(sut.destinations)
-            XCTAssertEqual(sut.destinations?.count, 2)
-            XCTAssertEqual(sut.destinations?.first?.name, "A")
+            XCTAssertNotNil(sut.cellModels)
+            XCTAssertEqual(sut.cellModels?.count, 2)
+            XCTAssertEqual(sut.cellModels?.first?.name, "A")
         }
     }
 
@@ -62,13 +62,13 @@ final class DestinationsViewModelTests: XCTestCase {
         sut.getDestinations()
 
         // Then
-        XCTAssertNil(sut.destinations)
+        XCTAssertNil(sut.cellModels)
 
         sut.presentError
             .sink { error in
                 expectation.fulfill()
                 XCTAssertEqual(error as? DestinationFetchingServiceError, DestinationFetchingServiceError.destinationNotFound)
-                XCTAssertNil(sut.destinations)
+                XCTAssertNil(sut.cellModels)
             }
             .store(in: &cancellables)
 
@@ -98,11 +98,11 @@ final class DestinationsViewModelTests: XCTestCase {
         sut.getDestinationDetails(for: "42")
 
         // Then
-        XCTAssertNil(sut.destinations)
+        XCTAssertNil(sut.cellModels)
         XCTAssertNil(sut.destinationDetails)
 
         DispatchQueue.main.async {
-            XCTAssertNil(sut.destinations)
+            XCTAssertNil(sut.cellModels)
             XCTAssertNotNil(sut.destinationDetails)
         }
 
