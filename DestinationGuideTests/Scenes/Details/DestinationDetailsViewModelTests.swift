@@ -12,18 +12,20 @@ import XCTest
 final class DestinationDetailsViewModelTests: XCTestCase {
     private var cancellables: Set<AnyCancellable> = []
 
-    func test_getDestinationDetails_setsTitleAndWebViewURLRequest() {
+    func test_getDestinationDetails_setsTitleAndWebViewURLRequest_andSavesToRecent() {
         // Given
-        let expectation = XCTestExpectation(description: "destination details fetch occurs")
-        
+        let fetchExpectation = XCTestExpectation(description: "destination details fetch occurs")
+        let saveExpectation = XCTestExpectation(description: "save to recent destinations occurs")
+
         let sut = DestinationDetailsController.ViewModel(
             getDestinationDetails: {
-                expectation.fulfill()
+                fetchExpectation.fulfill()
 
                 return Just(DestinationDetails.placeholder)
                     .setFailureType(to: DestinationFetchingServiceError.self)
                     .eraseToAnyPublisher()
-            }
+            },
+            saveDestination: { _ in saveExpectation.fulfill() }
         )
         
         // When
@@ -32,22 +34,26 @@ final class DestinationDetailsViewModelTests: XCTestCase {
         // Then
         XCTAssertNil(sut.title)
         XCTAssertNil(sut.webViewURLRequest)
-        
+
         DispatchQueue.main.async {
             XCTAssertEqual(sut.title, "Barbade")
             XCTAssertEqual(sut.webViewURLRequest?.url, URL(string:"https://evaneos.fr/barbade"))
         }
         
-        wait(for: [expectation], timeout: 0.1)
+        wait(for: [fetchExpectation, saveExpectation], timeout: 0.1)
     }
 
     func test_getDestinationDetails_triggersErrorPresentation_whenAnErrorOccurs() {
         // Given
+        let saveExpectation = XCTestExpectation(description: "save to recent destinations occurs")
+        saveExpectation.isInverted = true
+
         let sut = DestinationDetailsController.ViewModel(
             getDestinationDetails: {
                 Fail(error: DestinationFetchingServiceError.destinationNotFound)
                     .eraseToAnyPublisher()
-            }
+            },
+            saveDestination: { _ in saveExpectation.fulfill() }
         )
 
         let errorExpectation = XCTestExpectation(description: "error presentation gets triggered when an error occurs")
@@ -65,6 +71,6 @@ final class DestinationDetailsViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
 
-        wait(for: [errorExpectation], timeout: 0.1)
+        wait(for: [errorExpectation, saveExpectation], timeout: 0.1)
     }
 }

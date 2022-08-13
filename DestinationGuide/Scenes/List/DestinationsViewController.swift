@@ -131,6 +131,10 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
                         }
                     }
                     return future.eraseToAnyPublisher()
+                },
+                saveDestination: { destination in
+                    let service = RecentDestinationsService()
+                    try service.saveDestination(destination)
                 }
             )
         )
