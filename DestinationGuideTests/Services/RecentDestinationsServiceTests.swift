@@ -33,14 +33,16 @@ final class RecentDestinationsServiceTests: XCTestCase {
 
     func test_saveDestination_avoidsDuplicates() throws {
         // When
-        try sut.saveDestination(.placeholder)
+        var addedToRecentDestinations = try sut.saveDestination(.placeholder)
 
         // Then
         XCTAssertEqual(try recentDestinationsArray()?.count, 1)
         XCTAssertEqual(try recentDestinationsArray()?.first?.name, "Barbade")
+        XCTAssertTrue(addedToRecentDestinations)
 
-        try sut.saveDestination(.placeholder)
+        addedToRecentDestinations = try sut.saveDestination(.placeholder)
         XCTAssertEqual(try recentDestinationsArray()?.count, 1)
+        XCTAssertFalse(addedToRecentDestinations)
     }
 }
 

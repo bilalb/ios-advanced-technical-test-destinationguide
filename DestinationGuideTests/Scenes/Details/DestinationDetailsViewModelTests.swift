@@ -25,7 +25,11 @@ final class DestinationDetailsViewModelTests: XCTestCase {
                     .setFailureType(to: DestinationFetchingServiceError.self)
                     .eraseToAnyPublisher()
             },
-            saveDestination: { _ in saveExpectation.fulfill() }
+            saveDestination: { _ in
+                saveExpectation.fulfill()
+                return true
+            },
+            saveCompletedSubject: .init()
         )
         
         // When
@@ -48,12 +52,21 @@ final class DestinationDetailsViewModelTests: XCTestCase {
         let saveExpectation = XCTestExpectation(description: "save to recent destinations occurs")
         saveExpectation.isInverted = true
 
+        let saveCompletedExpectation = XCTestExpectation(description: "save completed is triggered")
+        saveCompletedExpectation.isInverted = true
+
+        let saveCompletedSubject = PassthroughSubject<Void, Never>()
+
         let sut = DestinationDetailsController.ViewModel(
             getDestinationDetails: {
                 Fail(error: DestinationFetchingServiceError.destinationNotFound)
                     .eraseToAnyPublisher()
             },
-            saveDestination: { _ in saveExpectation.fulfill() }
+            saveDestination: { _ in
+                saveExpectation.fulfill()
+                return true
+            },
+            saveCompletedSubject: saveCompletedSubject
         )
 
         let errorExpectation = XCTestExpectation(description: "error presentation gets triggered when an error occurs")
@@ -71,6 +84,70 @@ final class DestinationDetailsViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
 
-        wait(for: [errorExpectation, saveExpectation], timeout: 0.1)
+        saveCompletedSubject
+            .sink { saveCompletedExpectation.fulfill() }
+            .store(in: &cancellables)
+
+        let expectations = [
+            errorExpectation,
+            saveExpectation,
+            saveCompletedExpectation
+        ]
+        wait(for: expectations, timeout: 0.1)
+    }
+
+    func test_saveCompleted_isTriggeredWhenDestinationIsSaved() {
+        // Given
+        let saveCompletedExpectation = XCTestExpectation(description: "save completed is triggered")
+
+        let saveCompletedSubject = PassthroughSubject<Void, Never>()
+
+        let sut = DestinationDetailsController.ViewModel(
+            getDestinationDetails: {
+                return Just(DestinationDetails.placeholder)
+                    .setFailureType(to: DestinationFetchingServiceError.self)
+                    .eraseToAnyPublisher()
+            },
+            saveDestination: { _ in true },
+            saveCompletedSubject: saveCompletedSubject
+        )
+
+        // When
+        sut.getDestinationDetails()
+
+        // Then
+        saveCompletedSubject
+            .sink { saveCompletedExpectation.fulfill() }
+            .store(in: &cancellables)
+
+        wait(for: [saveCompletedExpectation], timeout: 0.1)
+    }
+
+    func test_saveCompleted_isNotTriggeredWhenDestinationIsNotSaved() {
+        // Given
+        let saveCompletedExpectation = XCTestExpectation(description: "save completed is triggered")
+        saveCompletedExpectation.isInverted = true
+
+        let saveCompletedSubject = PassthroughSubject<Void, Never>()
+
+        let sut = DestinationDetailsController.ViewModel(
+            getDestinationDetails: {
+                return Just(DestinationDetails.placeholder)
+                    .setFailureType(to: DestinationFetchingServiceError.self)
+                    .eraseToAnyPublisher()
+            },
+            saveDestination: { _ in false },
+            saveCompletedSubject: saveCompletedSubject
+        )
+
+        // When
+        sut.getDestinationDetails()
+
+        // Then
+        saveCompletedSubject
+            .sink { saveCompletedExpectation.fulfill() }
+            .store(in: &cancellables)
+
+        wait(for: [saveCompletedExpectation], timeout: 0.1)
     }
 }

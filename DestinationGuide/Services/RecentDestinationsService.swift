@@ -22,13 +22,21 @@ struct RecentDestinationsService {
         self.decoder = decoder
     }
 
-    func saveDestination(_ destination: DestinationDetails) throws {
+    /// Saves to recent destinations.
+    ///
+    /// Duplicated destinations are not saved.
+    /// - Parameter destination: The destination to save to recent destinations
+    /// - Returns: `true` if the destination is not duplicated and added to recent destinations. Otherwise `false`.
+    func saveDestination(_ destination: DestinationDetails) throws -> Bool {
         let destinationsArray = try recentDestinationsArray() ?? []
         if !destinationsArray.contains(destination) {
             let data = try encoder.encode(destination)
             var dataArray = userDefaults.array(forKey: key) ?? []
             dataArray.append(data)
             userDefaults.set(dataArray, forKey: key)
+            return true
+        } else {
+            return false
         }
     }
 

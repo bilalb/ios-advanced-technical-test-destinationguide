@@ -23,6 +23,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                             let service = RecentDestinationsService()
                             return service.recentDestinations()
                         },
+                        refreshRecentDestinations: DestinationStore.shared.refreshRecentDestinations.eraseToAnyPublisher(),
                         getDestinations: {
                             let future = Future<Set<Destination>, DestinationFetchingServiceError> { promise in
                                 service.getDestinations { result in

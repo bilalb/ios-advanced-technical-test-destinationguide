@@ -10,7 +10,8 @@ import Foundation
 
 protocol DestinationDetailsViewModelIO {
     func getDestinationDetails() -> AnyPublisher<DestinationDetails, DestinationFetchingServiceError>
-    func saveDestination(_ destinationDetails: DestinationDetails) throws
+    func saveDestination(_ destinationDetails: DestinationDetails) throws -> Bool
+    var saveCompletedSubject: PassthroughSubject<Void, Never> { get }
 }
 
 extension DestinationDetailsController {
@@ -56,7 +57,12 @@ extension DestinationDetailsController {
 
             $destinationDetails
                 .compactMap { $0 }
-                .sink { [io] in try? io.saveDestination($0) }
+                .sink { [io] in
+                    let addedToRecentDestinations = try? io.saveDestination($0)
+                    if addedToRecentDestinations == true {
+                        io.saveCompletedSubject.send()
+                    }
+                }
                 .store(in: &cancellables)
         }
     }
@@ -64,11 +70,13 @@ extension DestinationDetailsController {
 
 extension DestinationDetailsController.ViewModel {
     convenience init(getDestinationDetails: @escaping () -> AnyPublisher<DestinationDetails, DestinationFetchingServiceError>,
-                     saveDestination: @escaping (DestinationDetails) throws -> Void) {
+                     saveDestination: @escaping (DestinationDetails) throws -> Bool,
+                     saveCompletedSubject: PassthroughSubject<Void, Never>) {
         self.init(
             io: AnyDestinationDetailsViewModelIO(
                 getDestinationDetails: getDestinationDetails,
-                saveDestination: saveDestination
+                saveDestination: saveDestination,
+                saveCompletedSubject: saveCompletedSubject
             )
         )
     }

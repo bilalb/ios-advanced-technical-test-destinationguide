@@ -10,12 +10,14 @@ import Foundation
 
 protocol DestinationsViewModelIO {
     func recentDestinations() -> AnyPublisher<[DestinationDetails]?, Error>
+    var refreshRecentDestinations: AnyPublisher<Void, Never> { get }
     func getDestinations() -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>
 }
 
 extension DestinationsViewController {
     final class ViewModel {
         private let io: DestinationsViewModelIO
+        private var cancellables: Set<AnyCancellable> = []
 
         @Published private(set) var sectionModels: [SectionModel]?
         @Published private var recentCellModels: [RecentDestinationCell.ViewModel]?
@@ -30,44 +32,24 @@ extension DestinationsViewController {
             self.io = io
 
             bindCellModels()
+            bindRefreshRecentDestinations()
         }
 
         func loadDestinations() {
-            io.recentDestinations()
-                .receive(on: DispatchQueue.main)
-                .`catch` { [presentErrorSubject] error -> Empty in
-                    presentErrorSubject.send(error)
-                    return Empty(completeImmediately: true)
-                }
-                .map {
-                    $0?
-                        .sorted(by: { $0.name < $1.name })
-                        .map(RecentDestinationCell.ViewModel.init(destinationDetails:))
-                }
-                .assign(to: &$recentCellModels)
-
-            io.getDestinations()
-                .receive(on: DispatchQueue.main)
-                .`catch` { [presentErrorSubject] error -> Empty in
-                    presentErrorSubject.send(error)
-                    return Empty(completeImmediately: true)
-                }
-                .map {
-                    Array($0)
-                        .sorted(by: { $0.name < $1.name })
-                        .map(DestinationCell.ViewModel.init(destination:))
-                }
-                .assign(to: &$allCellModels)
+            loadRecentDestinations()
+            getDestinations()
         }
     }
 }
 
 extension DestinationsViewController.ViewModel {
     convenience init(recentDestinations: @escaping () -> AnyPublisher<[DestinationDetails]?, Error>,
+                     refreshRecentDestinations: AnyPublisher<Void, Never>,
                      getDestinations: @escaping () -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>) {
         self.init(
             io: AnyDestinationsViewModelIO(
                 recentDestinations: recentDestinations,
+                refreshRecentDestinations: refreshRecentDestinations,
                 getDestinations: getDestinations
             )
         )
@@ -75,6 +57,36 @@ extension DestinationsViewController.ViewModel {
 }
 
 private extension DestinationsViewController.ViewModel {
+    func loadRecentDestinations() {
+        io.recentDestinations()
+            .receive(on: DispatchQueue.main)
+            .`catch` { [presentErrorSubject] error -> Empty in
+                presentErrorSubject.send(error)
+                return Empty(completeImmediately: true)
+            }
+            .map {
+                $0?
+                    .sorted(by: { $0.name < $1.name })
+                    .map(RecentDestinationCell.ViewModel.init(destinationDetails:))
+            }
+            .assign(to: &$recentCellModels)
+    }
+
+    func getDestinations() {
+        io.getDestinations()
+            .receive(on: DispatchQueue.main)
+            .`catch` { [presentErrorSubject] error -> Empty in
+                presentErrorSubject.send(error)
+                return Empty(completeImmediately: true)
+            }
+            .map {
+                Array($0)
+                    .sorted(by: { $0.name < $1.name })
+                    .map(DestinationCell.ViewModel.init(destination:))
+            }
+            .assign(to: &$allCellModels)
+    }
+
     func bindCellModels() {
         $recentCellModels
             .combineLatest($allCellModels.compactMap { $0 })
@@ -98,5 +110,11 @@ private extension DestinationsViewController.ViewModel {
                 return sectionModels
             }
             .assign(to: &$sectionModels)
+    }
+
+    func bindRefreshRecentDestinations() {
+        io.refreshRecentDestinations
+            .sink { [weak self] in self?.loadRecentDestinations() }
+            .store(in: &cancellables)
     }
 }

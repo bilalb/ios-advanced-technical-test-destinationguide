@@ -169,8 +169,9 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
                 },
                 saveDestination: { destination in
                     let service = RecentDestinationsService()
-                    try service.saveDestination(destination)
-                }
+                    return try service.saveDestination(destination)
+                },
+                saveCompletedSubject: DestinationStore.shared.refreshRecentDestinations
             )
         )
         show(viewController, sender: self)

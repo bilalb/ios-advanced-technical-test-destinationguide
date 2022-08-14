@@ -24,6 +24,7 @@ final class DestinationsViewModelTests: XCTestCase {
                     .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             },
+            refreshRecentDestinations: PassthroughSubject<Void, Never>().eraseToAnyPublisher(),
             getDestinations: {
                 Just([first, second])
                     .setFailureType(to: DestinationFetchingServiceError.self)
@@ -60,6 +61,7 @@ final class DestinationsViewModelTests: XCTestCase {
                     .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             },
+            refreshRecentDestinations: PassthroughSubject<Void, Never>().eraseToAnyPublisher(),
             getDestinations: {
                 Just([.placeholder])
                     .setFailureType(to: DestinationFetchingServiceError.self)
@@ -89,6 +91,7 @@ final class DestinationsViewModelTests: XCTestCase {
                     .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             },
+            refreshRecentDestinations: PassthroughSubject<Void, Never>().eraseToAnyPublisher(),
             getDestinations: {
                 Fail(error: DestinationFetchingServiceError.destinationNotFound)
                     .eraseToAnyPublisher()
@@ -111,6 +114,30 @@ final class DestinationsViewModelTests: XCTestCase {
             }
             .store(in: &cancellables)
 
+        wait(for: [expectation], timeout: 0.1)
+    }
+
+    func test_refreshRecentDestinations() {
+        // Given
+        let expectation = XCTestExpectation(description: "load recent destinations")
+
+        let refreshRecentDestinations = PassthroughSubject<Void, Never>()
+
+        let sut = DestinationsViewController.ViewModel(
+            recentDestinations: {
+                expectation.fulfill()
+                return Just(nil)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            },
+            refreshRecentDestinations: refreshRecentDestinations.eraseToAnyPublisher(),
+            getDestinations: { fatalError("getDestinations should not be called when refreshing recent destinations") }
+        )
+
+        // When
+        refreshRecentDestinations.send()
+
+        // Then
         wait(for: [expectation], timeout: 0.1)
     }
 }
