@@ -76,6 +76,8 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        title = "Destinations"
         
         view.backgroundColor = .white
         view.addSubview(collectionView)
