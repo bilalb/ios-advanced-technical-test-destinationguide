@@ -22,6 +22,13 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         fatalError("init(coder:) has not been implemented")
     }
 
+    private lazy var searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        return searchController
+    }()
+
     private lazy var collectionViewLayout: UICollectionViewLayout = {
         let configuration = UICollectionViewCompositionalLayoutConfiguration()
         configuration.interSectionSpacing = 48
@@ -35,6 +42,8 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
                     return self?.makeRecentSection()
                 case is DestinationCell.ViewModel:
                     return self?.makeAllSection()
+                case is NoSearchResultCell.ViewModel:
+                    return self?.makeNoResultSection()
                 default:
                     preconditionFailure("unknown cellModel: \(String(describing: cellModel))")
                 }
@@ -45,6 +54,7 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
     
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout)
+        collectionView.contentInset = .init(top: 16, left: 0, bottom: 0, right: 0)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
@@ -56,6 +66,10 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
             forCellWithReuseIdentifier: DestinationCell.reuseIdentifier
         )
         collectionView.register(
+            NoSearchResultCell.self,
+            forCellWithReuseIdentifier: NoSearchResultCell.reuseIdentifier
+        )
+        collectionView.register(
             SectionHeader.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: SectionHeader.reuseIdentifier
@@ -65,14 +79,33 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         
         return collectionView
     }()
+
+    private let activityIndicator: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.color = UIColor.evaneos(color: .veraneos)
+        spinner.hidesWhenStopped = true
+        spinner.startAnimating()
+        return spinner
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        title = "Destinations"
+
+        navigationController?.navigationBar.tintColor = UIColor.evaneos(color: .veraneos)
+
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
+
         view.backgroundColor = .white
         view.addSubview(collectionView)
         collectionView.frame = view.frame
         collectionView.dataSource = self
+
+        view.addSubview(activityIndicator)
+        activityIndicator.center = view.center
 
         bindViewModel()
         viewModel.loadDestinations()
@@ -80,8 +113,11 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
 
     private func bindViewModel() {
         viewModel.presentError
-            .sink { [weak self] error in
+            .sink { [weak self, activityIndicator] error in
+                activityIndicator.stopAnimating()
+
                 let alert = UIAlertController(title: "Erreur", message: error.localizedDescription, preferredStyle: .alert)
+                alert.view.tintColor = UIColor.evaneos(color: .veraneos)
                 alert.addAction(UIAlertAction(title: "Annuler", style: .cancel))
 
                 self?.showDetailViewController(alert, sender: self)
@@ -89,8 +125,13 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
             .store(in: &cancellables)
 
         viewModel.$sectionModels
+            .compactMap { $0 }
+            .removeDuplicates()
             .receive(on: DispatchQueue.main)
-            .sink { [collectionView] _ in collectionView.reloadData() }
+            .sink { [collectionView, activityIndicator] _ in
+                collectionView.reloadData()
+                activityIndicator.stopAnimating()
+            }
             .store(in: &cancellables)
     }
 
@@ -116,6 +157,8 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
                 cell.setupCell(viewModel: cellModel)
                 return cell
             }
+        case is NoSearchResultCell.ViewModel:
+            return collectionView.dequeueReusableCell(withReuseIdentifier: NoSearchResultCell.reuseIdentifier, for: indexPath)
         default:
             break
         }
@@ -239,5 +282,37 @@ private extension DestinationsViewController {
             elementKind: UICollectionView.elementKindSectionHeader,
             alignment: .top
         )
+    }
+
+    func makeNoResultSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .fractionalHeight(1)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .estimated(37)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item]
+        )
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.boundarySupplementaryItems = [makeSectionHeader()]
+        section.contentInsets = .init(top: 16, leading: 16, bottom: 0, trailing: 16)
+
+        return section
+    }
+}
+
+// MARK: - UISearchResultsUpdating
+
+extension DestinationsViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text else { return }
+        viewModel.filterDestinations(with: searchText)
     }
 }

@@ -11,6 +11,15 @@ enum DestinationFetchingServiceError : Error {
     case destinationNotFound
 }
 
+extension DestinationFetchingServiceError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .destinationNotFound:
+            return "La destination est introuvable."
+        }
+    }
+}
+
 protocol DestinationFetchingServiceProtocol {
     func getDestinations(completion: @escaping  (Result<Set<Destination>, DestinationFetchingServiceError>)->())
     func getDestinationDetails(for destinationID: Destination.ID, completion: @escaping  (Result<DestinationDetails, DestinationFetchingServiceError>)->())

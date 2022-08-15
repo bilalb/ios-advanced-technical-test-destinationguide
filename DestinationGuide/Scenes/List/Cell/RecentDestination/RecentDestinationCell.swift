@@ -10,6 +10,7 @@ import UIKit
 final class RecentDestinationCell: UICollectionViewCell {
     //  MARK: - Components
 
+    // `UIButton` allows to configure `contentInsets` unlike `UILabel`.
     private let nameLabel: UIButton = {
         let button = UIButton()
         button.setTitleColor(UIColor.evaneos(color: .ink), for: .normal)
@@ -22,7 +23,7 @@ final class RecentDestinationCell: UICollectionViewCell {
         }
         button.isUserInteractionEnabled = false
         button.layer.cornerRadius = 16
-        button.layer.borderColor = UIColor.evaneos(color: .ink).cgColor//
+        button.layer.borderColor = UIColor.evaneos(color: .ink).cgColor
         button.layer.borderWidth = 1
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -32,8 +33,6 @@ final class RecentDestinationCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        self.backgroundColor = .clear
 
         self.addView()
     }

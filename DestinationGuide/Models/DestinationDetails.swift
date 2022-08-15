@@ -12,3 +12,9 @@ struct DestinationDetails : Hashable, Identifiable, Codable {
     let name: String
     let url: URL
 }
+
+extension DestinationDetails: Comparable {
+    static func < (lhs: Self, rhs: Self) -> Bool {
+        lhs.name < rhs.name
+    }
+}
