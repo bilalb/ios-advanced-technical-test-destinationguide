@@ -65,6 +65,14 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         
         return collectionView
     }()
+
+    private let activityIndicator: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.color = UIColor.evaneos(color: .veraneos)
+        spinner.hidesWhenStopped = true
+        spinner.startAnimating()
+        return spinner
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,13 +82,18 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         collectionView.frame = view.frame
         collectionView.dataSource = self
 
+        view.addSubview(activityIndicator)
+        activityIndicator.center = view.center
+
         bindViewModel()
         viewModel.loadDestinations()
     }
 
     private func bindViewModel() {
         viewModel.presentError
-            .sink { [weak self] error in
+            .sink { [weak self, activityIndicator] error in
+                activityIndicator.stopAnimating()
+
                 let alert = UIAlertController(title: "Erreur", message: error.localizedDescription, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Annuler", style: .cancel))
 
@@ -89,8 +102,12 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
             .store(in: &cancellables)
 
         viewModel.$sectionModels
+            .compactMap { $0 }
             .receive(on: DispatchQueue.main)
-            .sink { [collectionView] _ in collectionView.reloadData() }
+            .sink { [collectionView, activityIndicator] _ in
+                collectionView.reloadData()
+                activityIndicator.stopAnimating()
+            }
             .store(in: &cancellables)
     }
 
