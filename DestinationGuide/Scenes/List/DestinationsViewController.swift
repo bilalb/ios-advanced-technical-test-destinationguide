@@ -79,6 +79,8 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         super.viewDidLoad()
 
         title = "Destinations"
+
+        navigationController?.navigationBar.tintColor = UIColor.evaneos(color: .veraneos)
         
         view.backgroundColor = .white
         view.addSubview(collectionView)
@@ -98,6 +100,7 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
                 activityIndicator.stopAnimating()
 
                 let alert = UIAlertController(title: "Erreur", message: error.localizedDescription, preferredStyle: .alert)
+                alert.view.tintColor = UIColor.evaneos(color: .veraneos)
                 alert.addAction(UIAlertAction(title: "Annuler", style: .cancel))
 
                 self?.showDetailViewController(alert, sender: self)

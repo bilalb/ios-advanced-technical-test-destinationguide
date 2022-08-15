@@ -59,6 +59,7 @@ final class DestinationDetailsController: UIViewController {
                 activityIndicator.stopAnimating()
 
                 let alert = UIAlertController(title: "Erreur", message: error.localizedDescription, preferredStyle: .alert)
+                alert.view.tintColor = UIColor.evaneos(color: .veraneos)
                 alert.addAction(UIAlertAction(title: "Annuler", style: .cancel))
 
                 self?.showDetailViewController(alert, sender: self)
