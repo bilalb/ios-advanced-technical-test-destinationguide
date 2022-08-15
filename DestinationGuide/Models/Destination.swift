@@ -14,3 +14,9 @@ struct Destination : Hashable, Identifiable {
     let tag: String?
     let rating: Int
 }
+
+extension Destination: Comparable {
+    static func < (lhs: Self, rhs: Self) -> Bool {
+        lhs.name < rhs.name
+    }
+}

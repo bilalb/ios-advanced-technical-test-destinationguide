@@ -14,6 +14,12 @@ extension DestinationsViewController.ViewModel {
     }
 }
 
+extension DestinationsViewController.ViewModel.SectionModel: Equatable {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.title == rhs.title && lhs.cellModels.map(\.id) == rhs.cellModels.map(\.id)
+    }
+}
+
 protocol DestinationCellModel {
     var id: Destination.ID { get }
 }
@@ -21,3 +27,9 @@ protocol DestinationCellModel {
 extension RecentDestinationCell.ViewModel: DestinationCellModel {}
 
 extension DestinationCell.ViewModel: DestinationCellModel {}
+
+extension NoSearchResultCell.ViewModel: DestinationCellModel {
+    var id: Destination.ID {
+        "NoSearchResultCell"
+    }
+}

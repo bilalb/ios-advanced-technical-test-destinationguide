@@ -19,6 +19,8 @@ extension DestinationsViewController {
         private let io: DestinationsViewModelIO
         private var cancellables: Set<AnyCancellable> = []
 
+        @Published private var allDestinations: [Destination]?
+
         @Published private(set) var sectionModels: [SectionModel]?
         @Published private var recentCellModels: [RecentDestinationCell.ViewModel]?
         @Published private var allCellModels: [DestinationCell.ViewModel]?
@@ -38,6 +40,21 @@ extension DestinationsViewController {
         func loadDestinations() {
             loadRecentDestinations()
             getDestinations()
+        }
+
+        func filterDestinations(with searchText: String) {
+            guard let allDestinations = allDestinations else { return }
+
+            let filteredDestinations: [Destination]
+            if searchText.isEmpty {
+                filteredDestinations = allDestinations
+            } else {
+                filteredDestinations = allDestinations.filter { $0.name.lowercased().contains(searchText.lowercased()) }
+            }
+
+            allCellModels = filteredDestinations
+                .sorted()
+                .map(DestinationCell.ViewModel.init(destination:))
         }
     }
 }
@@ -66,7 +83,7 @@ private extension DestinationsViewController.ViewModel {
             }
             .map {
                 $0?
-                    .sorted(by: { $0.name < $1.name })
+                    .sorted()
                     .map(RecentDestinationCell.ViewModel.init(destinationDetails:))
             }
             .assign(to: &$recentCellModels)
@@ -79,9 +96,14 @@ private extension DestinationsViewController.ViewModel {
                 presentErrorSubject.send(error)
                 return Empty(completeImmediately: true)
             }
+            .map(Array.init(_:))
+            .assign(to: &$allDestinations)
+
+        $allDestinations
+            .compactMap { $0 }
             .map {
                 Array($0)
-                    .sorted(by: { $0.name < $1.name })
+                    .sorted()
                     .map(DestinationCell.ViewModel.init(destination:))
             }
             .assign(to: &$allCellModels)
@@ -101,9 +123,16 @@ private extension DestinationsViewController.ViewModel {
                     sectionModels.append(sectionModel)
                 }
 
+                let cellModels: [DestinationCellModel]
+                if allCellModels.isEmpty {
+                    cellModels = [NoSearchResultCell.ViewModel()]
+                } else {
+                    cellModels = allCellModels
+                }
+
                 let sectionModel = SectionModel(
                     title: "Toutes nos destinations",
-                    cellModels: allCellModels
+                    cellModels: cellModels
                 )
                 sectionModels.append(sectionModel)
 
