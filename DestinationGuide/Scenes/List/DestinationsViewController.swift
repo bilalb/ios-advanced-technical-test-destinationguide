@@ -23,20 +23,43 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
     }
 
     private lazy var collectionViewLayout: UICollectionViewLayout = {
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 16, left: 0, bottom: 32, right: 0)
-        layout.minimumLineSpacing = 32
-        layout.itemSize = .init(width: 342, height: 280)
-        return layout
+        let configuration = UICollectionViewCompositionalLayoutConfiguration()
+        configuration.interSectionSpacing = 48
+
+        return UICollectionViewCompositionalLayout(
+            sectionProvider: { [weak self] sectionIndex, _ in
+                let cellModel = self?.viewModel.sectionModels?[sectionIndex].cellModels.first
+
+                switch cellModel {
+                case is RecentDestinationCell.ViewModel:
+                    return self?.makeRecentSection()
+                case is DestinationCell.ViewModel:
+                    return self?.makeAllSection()
+                default:
+                    preconditionFailure("unknown cellModel: \(String(describing: cellModel))")
+                }
+            },
+            configuration: configuration
+        )
     }()
     
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(DestinationCell.self, forCellWithReuseIdentifier: "MyCell")
-        collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "SectionHeader")
+        collectionView.register(
+            RecentDestinationCell.self,
+            forCellWithReuseIdentifier: RecentDestinationCell.reuseIdentifier
+        )
+        collectionView.register(
+            DestinationCell.self,
+            forCellWithReuseIdentifier: DestinationCell.reuseIdentifier
+        )
+        collectionView.register(
+            SectionHeader.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: SectionHeader.reuseIdentifier
+        )
         collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
         
@@ -52,7 +75,7 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         collectionView.dataSource = self
 
         bindViewModel()
-        viewModel.getDestinations()
+        viewModel.loadDestinations()
     }
 
     private func bindViewModel() {
@@ -65,44 +88,48 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
             }
             .store(in: &cancellables)
 
-        viewModel.$cellModels
+        viewModel.$sectionModels
+            .receive(on: DispatchQueue.main)
             .sink { [collectionView] _ in collectionView.reloadData() }
             .store(in: &cancellables)
+    }
 
-        viewModel.$destinationDetails
-            .compactMap { $0 }
-            .sink { [weak self] destinationDetails in
-                let viewController = DestinationDetailsController(title: destinationDetails.name, webViewUrl: destinationDetails.url)
-                self?.show(viewController, sender: self)
-            }
-            .store(in: &cancellables)
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        viewModel.sectionModels?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.cellModels?.count ?? 0
+        viewModel.sectionModels?[section].cellModels.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if let cellModel = viewModel.cellModels?[indexPath.item],
-           let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MyCell", for: indexPath) as? DestinationCell {
-            cell.setupCell(viewModel: cellModel)
-            return cell
+        let cellModel = viewModel.sectionModels?[indexPath.section].cellModels[indexPath.row]
+
+        switch cellModel {
+        case let cellModel as RecentDestinationCell.ViewModel:
+            if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentDestinationCell.reuseIdentifier, for: indexPath) as? RecentDestinationCell {
+                cell.setupCell(viewModel: cellModel)
+                return cell
+            }
+        case let cellModel as DestinationCell.ViewModel:
+            if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DestinationCell.reuseIdentifier, for: indexPath) as? DestinationCell {
+                cell.setupCell(viewModel: cellModel)
+                return cell
+            }
+        default:
+            break
         }
         return UICollectionViewCell()
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        
-        
         switch kind {
-            
         case UICollectionView.elementKindSectionHeader:
-            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "SectionHeader", for: indexPath) as! SectionHeader
-            headerView.titleLabel.text = "Toutes nos destinations"
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SectionHeader.reuseIdentifier, for: indexPath) as! SectionHeader
+            let sectionModel = viewModel.sectionModels?[indexPath.section]
+            headerView.titleLabel.text = sectionModel?.title
             return headerView
-            
         default:
-            
             assert(false, "Unexpected element kind")
         }
     }
@@ -120,11 +147,97 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let cellModel = viewModel.cellModels?[indexPath.item] else {
+        guard let cellModel = viewModel.sectionModels?[indexPath.section].cellModels[indexPath.row] else {
             print("Unable to react to item selection at: \(indexPath), because the item does not have any related destination.")
             return
         }
 
-        viewModel.getDestinationDetails(for: cellModel.id)
+        let viewController = DestinationDetailsController(
+            viewModel: .init(
+                getDestinationDetails: {
+                    let future = Future<DestinationDetails, DestinationFetchingServiceError> { promise in
+                        DestinationFetchingService().getDestinationDetails(for: cellModel.id) { result in
+                            switch result {
+                            case .success(let destinationDetails):
+                                promise(.success(destinationDetails))
+                            case .failure(let error):
+                                promise(.failure(error))
+                            }
+                        }
+                    }
+                    return future.eraseToAnyPublisher()
+                },
+                saveDestination: { destination in
+                    let service = RecentDestinationsService()
+                    return try service.saveDestination(destination)
+                },
+                saveCompletedSubject: DestinationStore.shared.refreshRecentDestinations
+            )
+        )
+        show(viewController, sender: self)
+    }
+}
+
+private extension DestinationsViewController {
+    func makeRecentSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .estimated(1),
+            heightDimension: .fractionalHeight(1)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .estimated(1),
+            heightDimension: .estimated(37)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitems: [item]
+        )
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.boundarySupplementaryItems = [makeSectionHeader()]
+        section.contentInsets = .init(top: 16, leading: 16, bottom: 0, trailing: 16)
+        section.orthogonalScrollingBehavior = .continuous
+        section.interGroupSpacing = 16
+
+        return section
+    }
+
+    func makeAllSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .fractionalHeight(1)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .estimated(280)
+        )
+        let group = NSCollectionLayoutGroup.vertical(
+            layoutSize: groupSize,
+            subitems: [item]
+        )
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.boundarySupplementaryItems = [makeSectionHeader()]
+        section.contentInsets = .init(top: 16, leading: 16, bottom: 32, trailing: 16)
+        section.interGroupSpacing = 32
+
+        return section
+    }
+
+    func makeSectionHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
+        let layoutSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .estimated(30)
+        )
+
+        return .init(
+            layoutSize: layoutSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .top
+        )
     }
 }

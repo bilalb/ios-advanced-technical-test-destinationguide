@@ -5,18 +5,17 @@
 //  Created by Alexandre Guibert1 on 18/07/2022.
 //
 
+import Combine
 import UIKit
 import WebKit
 
 final class DestinationDetailsController: UIViewController {
-    
-    private let name: String
-    private let webViewUrl: URL
-    
-    init(title: String, webViewUrl: URL) {
-        self.name = title
-        self.webViewUrl = webViewUrl
-        
+    private let viewModel: ViewModel
+    private var cancellables: Set<AnyCancellable> = []
+
+    init(viewModel: ViewModel) {
+        self.viewModel = viewModel
+
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -47,16 +46,35 @@ final class DestinationDetailsController: UIViewController {
         self.webView.navigationDelegate = self
         
         self.addView()
-        
-        self.navigationItem.title = name
-        
-        let request = URLRequest(url: self.webViewUrl)
-        self.webView.load(request)
-        
+
+        bindViewModel()
+        viewModel.getDestinationDetails()
     }
     
     //  MARK: - Functions
-    
+
+    private func bindViewModel() {
+        viewModel.presentError
+            .sink { [weak self, activityIndicator] error in
+                activityIndicator.stopAnimating()
+
+                let alert = UIAlertController(title: "Erreur", message: error.localizedDescription, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Annuler", style: .cancel))
+
+                self?.showDetailViewController(alert, sender: self)
+            }
+            .store(in: &cancellables)
+
+        viewModel.$title
+            .assign(to: \.title, on: navigationItem)
+            .store(in: &cancellables)
+
+        viewModel.$webViewURLRequest
+            .compactMap { $0 }
+            .sink { [webView] in webView.load($0) }
+            .store(in: &cancellables)
+    }
+
     private func addView() {
         self.view.addSubview(self.webView)
         self.view.addSubview(self.activityIndicator)

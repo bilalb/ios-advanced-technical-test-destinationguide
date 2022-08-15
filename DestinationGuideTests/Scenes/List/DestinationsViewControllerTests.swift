@@ -10,21 +10,34 @@ import Combine
 import XCTest
 
 final class DestinationsViewControllerTests: XCTestCase {
-    func test_fetchDestinations_onViewDidLoad() {
+    private var cancellables: Set<AnyCancellable> = []
+
+    func test_loadsDestinations_onViewDidLoad() {
         // Given
-        let expectation = XCTestExpectation(description: "send get destination request on viewDidLoad")
+        let recentDestinationsExpectation = XCTestExpectation(description: "loads recent destinations")
+
+        let refreshExpectation = XCTestExpectation(description: "refresh destinations")
+        refreshExpectation.isInverted = true
+
+        let refreshRecentDestinations = PassthroughSubject<Void, Never>()
+
+        let getDestinationsExpectation = XCTestExpectation(description: "gets destinations")
 
         let sut = DestinationsViewController(
             viewModel: .init(
-                getDestinations: {
-                    expectation.fulfill()
+                recentDestinations: {
+                    recentDestinationsExpectation.fulfill()
 
-                    return Just([Destination.placeholder])
-                        .setFailureType(to: DestinationFetchingServiceError.self)
+                    return Just([.placeholder])
+                        .setFailureType(to: Error.self)
                         .eraseToAnyPublisher()
                 },
-                getDestinationDetails: { _ in
-                    Empty(completeImmediately: true, outputType: DestinationDetails.self, failureType: DestinationFetchingServiceError.self)
+                refreshRecentDestinations: refreshRecentDestinations.eraseToAnyPublisher(),
+                getDestinations: {
+                    getDestinationsExpectation.fulfill()
+
+                    return Just([.placeholder])
+                        .setFailureType(to: DestinationFetchingServiceError.self)
                         .eraseToAnyPublisher()
                 }
             )
@@ -34,7 +47,15 @@ final class DestinationsViewControllerTests: XCTestCase {
         sut.viewDidLoad()
 
         // Then
-        wait(for: [expectation], timeout: 0.1)
-        XCTAssertEqual(expectation.expectedFulfillmentCount, 1)
+        refreshRecentDestinations
+            .sink { refreshExpectation.fulfill() }
+            .store(in: &cancellables)
+
+        let expectations = [
+            recentDestinationsExpectation,
+            getDestinationsExpectation,
+            refreshExpectation
+        ]
+        wait(for: expectations, timeout: 0.1)
     }
 }

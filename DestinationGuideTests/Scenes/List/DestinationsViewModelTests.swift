@@ -12,46 +12,88 @@ import XCTest
 final class DestinationsViewModelTests: XCTestCase {
     private var cancellables: Set<AnyCancellable> = []
 
-    func test_getDestinations_sortsResponse() {
+    func test_loadDestinations_sortsResponse() {
         // Given
         let first = Destination(id: "217", name: "A", picture: URL(string:"https://static1.evcdn.net/images/reduction/1027399_w-800_h-800_q-70_m-crop.jpg")!, tag: "Incontournable", rating: 5)
 
         let second = Destination(id: "217", name: "Z", picture: URL(string:"https://static1.evcdn.net/images/reduction/1027399_w-800_h-800_q-70_m-crop.jpg")!, tag: "Incontournable", rating: 5)
 
         let sut = DestinationsViewController.ViewModel(
+            recentDestinations: {
+                Just([.placeholder])
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            },
+            refreshRecentDestinations: PassthroughSubject<Void, Never>().eraseToAnyPublisher(),
             getDestinations: {
                 Just([first, second])
                     .setFailureType(to: DestinationFetchingServiceError.self)
-                    .eraseToAnyPublisher()
-            },
-            getDestinationDetails: { _ in
-                Empty(completeImmediately: true, outputType: DestinationDetails.self, failureType: DestinationFetchingServiceError.self)
                     .eraseToAnyPublisher()
             }
         )
 
         // When
-        sut.getDestinations()
+        sut.loadDestinations()
 
         // Then
-        XCTAssertNil(sut.cellModels)
+        XCTAssertNil(sut.sectionModels)
 
         DispatchQueue.main.async {
-            XCTAssertNotNil(sut.cellModels)
-            XCTAssertEqual(sut.cellModels?.count, 2)
-            XCTAssertEqual(sut.cellModels?.first?.name, "A")
+            XCTAssertNotNil(sut.sectionModels)
+            XCTAssertEqual(sut.sectionModels?.count, 2)
+
+            XCTAssertEqual(sut.sectionModels?.first?.title, "Destinations récentes")
+            XCTAssertEqual(sut.sectionModels?.first?.cellModels.count, 1)
+            XCTAssertEqual(sut.sectionModels?.first?.cellModels.first?.id, "217")
+
+            XCTAssertEqual(sut.sectionModels?[1].title, "Toutes nos destinations")
+            XCTAssertEqual(sut.sectionModels?[1].cellModels.count, 2)
+            XCTAssertEqual((sut.sectionModels?[1].cellModels.first as? DestinationCell.ViewModel)?.name, "A")
+            XCTAssertEqual((sut.sectionModels?[1].cellModels[1] as? DestinationCell.ViewModel)?.name, "Z")
         }
     }
 
-    func test_getDestinations_triggersErrorPresentation_whenAnErrorOccurs() {
+    func test_loadDestinations_withoutRecentSection() {
         // Given
         let sut = DestinationsViewController.ViewModel(
-            getDestinations: {
-                Fail(error: DestinationFetchingServiceError.destinationNotFound)
+            recentDestinations: {
+                Just(nil)
+                    .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             },
-            getDestinationDetails: { _ in
-                Empty(completeImmediately: true, outputType: DestinationDetails.self, failureType: DestinationFetchingServiceError.self)
+            refreshRecentDestinations: PassthroughSubject<Void, Never>().eraseToAnyPublisher(),
+            getDestinations: {
+                Just([.placeholder])
+                    .setFailureType(to: DestinationFetchingServiceError.self)
+                    .eraseToAnyPublisher()
+            }
+        )
+
+        // When
+        sut.loadDestinations()
+
+        // Then
+        XCTAssertNil(sut.sectionModels)
+
+        DispatchQueue.main.async {
+            XCTAssertNotNil(sut.sectionModels)
+            XCTAssertEqual(sut.sectionModels?.count, 1)
+
+            XCTAssertEqual(sut.sectionModels?.first?.title, "Toutes nos destinations")
+        }
+    }
+
+    func test_loadDestinations_triggersErrorPresentation_whenAnErrorOccurs() {
+        // Given
+        let sut = DestinationsViewController.ViewModel(
+            recentDestinations: {
+                Just([.placeholder])
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            },
+            refreshRecentDestinations: PassthroughSubject<Void, Never>().eraseToAnyPublisher(),
+            getDestinations: {
+                Fail(error: DestinationFetchingServiceError.destinationNotFound)
                     .eraseToAnyPublisher()
             }
         )
@@ -59,54 +101,43 @@ final class DestinationsViewModelTests: XCTestCase {
         let expectation = XCTestExpectation(description: "error presentation gets triggered when an error occurs")
 
         // When
-        sut.getDestinations()
+        sut.loadDestinations()
 
         // Then
-        XCTAssertNil(sut.cellModels)
+        XCTAssertNil(sut.sectionModels)
 
         sut.presentError
             .sink { error in
                 expectation.fulfill()
                 XCTAssertEqual(error as? DestinationFetchingServiceError, DestinationFetchingServiceError.destinationNotFound)
-                XCTAssertNil(sut.cellModels)
+                XCTAssertNil(sut.sectionModels)
             }
             .store(in: &cancellables)
 
         wait(for: [expectation], timeout: 0.1)
     }
 
-    func test_getDestinationDetails() {
+    func test_refreshRecentDestinations() {
         // Given
-        let expectation = XCTestExpectation(description: "destination details fetch occurs")
+        let expectation = XCTestExpectation(description: "load recent destinations")
+
+        let refreshRecentDestinations = PassthroughSubject<Void, Never>()
 
         let sut = DestinationsViewController.ViewModel(
-            getDestinations: {
-                Empty(completeImmediately: true, outputType: Set<Destination>.self, failureType: DestinationFetchingServiceError.self)
+            recentDestinations: {
+                expectation.fulfill()
+                return Just(nil)
+                    .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             },
-            getDestinationDetails: { id in
-                expectation.fulfill()
-                XCTAssertEqual(id, "42")
-
-                return Just(DestinationDetails.placeholder)
-                    .setFailureType(to: DestinationFetchingServiceError.self)
-                    .eraseToAnyPublisher()
-            }
+            refreshRecentDestinations: refreshRecentDestinations.eraseToAnyPublisher(),
+            getDestinations: { fatalError("getDestinations should not be called when refreshing recent destinations") }
         )
 
         // When
-        sut.getDestinationDetails(for: "42")
+        refreshRecentDestinations.send()
 
         // Then
-        XCTAssertNil(sut.cellModels)
-        XCTAssertNil(sut.destinationDetails)
-
-        DispatchQueue.main.async {
-            XCTAssertNil(sut.cellModels)
-            XCTAssertNotNil(sut.destinationDetails)
-        }
-
         wait(for: [expectation], timeout: 0.1)
-        XCTAssertEqual(expectation.expectedFulfillmentCount, 1)
     }
 }

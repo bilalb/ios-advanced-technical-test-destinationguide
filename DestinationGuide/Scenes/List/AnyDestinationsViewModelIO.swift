@@ -9,20 +9,23 @@ import Combine
 import Foundation
 
 struct AnyDestinationsViewModelIO: DestinationsViewModelIO {
+    private let _recentDestinations: () -> AnyPublisher<[DestinationDetails]?, Error>
+    let refreshRecentDestinations: AnyPublisher<Void, Never>
     private let _getDestinations: () -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>
-    private let _getDestinationDetails: (Destination.ID) -> AnyPublisher<DestinationDetails, DestinationFetchingServiceError>
 
-    init(getDestinations: @escaping () -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>,
-         getDestinationDetails: @escaping (Destination.ID) -> AnyPublisher<DestinationDetails, DestinationFetchingServiceError>) {
+    init(recentDestinations: @escaping () -> AnyPublisher<[DestinationDetails]?, Error>,
+         refreshRecentDestinations: AnyPublisher<Void, Never>,
+         getDestinations: @escaping () -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>) {
+        _recentDestinations = recentDestinations
+        self.refreshRecentDestinations = refreshRecentDestinations
         _getDestinations = getDestinations
-        _getDestinationDetails = getDestinationDetails
+    }
+
+    func recentDestinations() -> AnyPublisher<[DestinationDetails]?, Error> {
+        _recentDestinations()
     }
 
     func getDestinations() -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError> {
         _getDestinations()
-    }
-
-    func getDestinationDetails(for id: Destination.ID) -> AnyPublisher<DestinationDetails, DestinationFetchingServiceError> {
-        _getDestinationDetails(id)
     }
 }

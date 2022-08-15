@@ -18,7 +18,7 @@ final class SectionHeader: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        layoutMargins = .init(top: 8, left: 16, bottom: 8, right: 16)
+        layoutMargins = .zero
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(titleLabel)
 
