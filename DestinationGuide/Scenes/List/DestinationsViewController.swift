@@ -45,6 +45,7 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
     
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: self.collectionViewLayout)
+        collectionView.contentInset = .init(top: 16, left: 0, bottom: 0, right: 0)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(
