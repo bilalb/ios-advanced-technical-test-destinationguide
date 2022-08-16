@@ -280,7 +280,7 @@ extension DestinationListViewController: UICollectionViewDataSource {
 extension DestinationListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cellModel = viewModel.sectionModels?[indexPath.section].cellModels[indexPath.row] else {
-            print("Unable to react to item selection at: \(indexPath), because the item does not have any related destination.")
+            print("Unable to react to item selection at: \(indexPath), because the item does not have any related cell model.")
             return
         }
 
