@@ -30,6 +30,7 @@
 		9C67FAF628AC37ED00E4F3E9 /* ApplicationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C67FAF528AC37ED00E4F3E9 /* ApplicationCoordinator.swift */; };
 		9C67FAF828AC3CFF00E4F3E9 /* DestinationListViewController.Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C67FAF728AC3CFF00E4F3E9 /* DestinationListViewController.Coordinator.swift */; };
 		9C67FAFC28AC411100E4F3E9 /* DestinationDetailsViewController.Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C67FAFB28AC411100E4F3E9 /* DestinationDetailsViewController.Coordinator.swift */; };
+		9C67FAFE28AC49BE00E4F3E9 /* DestinationFetchingService+Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C67FAFD28AC49BE00E4F3E9 /* DestinationFetchingService+Publisher.swift */; };
 		9CC8F90128AA8DCE00EFE1EB /* NoSearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CC8F90028AA8DCE00EFE1EB /* NoSearchResultCell.swift */; };
 		E710FABC2885AB4000326EEF /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = E710FABB2885AB4000326EEF /* Fonts.swift */; };
 		E710FAC52885AF2E00326EEF /* DestinationDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E710FAC42885AF2E00326EEF /* DestinationDetailsViewController.swift */; };
@@ -92,6 +93,7 @@
 		9C67FAF528AC37ED00E4F3E9 /* ApplicationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationCoordinator.swift; sourceTree = "<group>"; };
 		9C67FAF728AC3CFF00E4F3E9 /* DestinationListViewController.Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationListViewController.Coordinator.swift; sourceTree = "<group>"; };
 		9C67FAFB28AC411100E4F3E9 /* DestinationDetailsViewController.Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationDetailsViewController.Coordinator.swift; sourceTree = "<group>"; };
+		9C67FAFD28AC49BE00E4F3E9 /* DestinationFetchingService+Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DestinationFetchingService+Publisher.swift"; sourceTree = "<group>"; };
 		9CC8F90028AA8DCE00EFE1EB /* NoSearchResultCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSearchResultCell.swift; sourceTree = "<group>"; };
 		E710FABB2885AB4000326EEF /* Fonts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
 		E710FAC42885AF2E00326EEF /* DestinationDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationDetailsViewController.swift; sourceTree = "<group>"; };
@@ -321,6 +323,7 @@
 			isa = PBXGroup;
 			children = (
 				E794201626B83C0E0032C12E /* DestinationFetchingService.swift */,
+				9C67FAFD28AC49BE00E4F3E9 /* DestinationFetchingService+Publisher.swift */,
 				9C2FCAD428A927D20054AF57 /* RecentDestinationsService.swift */,
 			);
 			path = Services;
@@ -531,6 +534,7 @@
 			files = (
 				E794201726B83C0E0032C12E /* DestinationFetchingService.swift in Sources */,
 				E7878C1D26BACE2400CF1DB8 /* Styles.swift in Sources */,
+				9C67FAFE28AC49BE00E4F3E9 /* DestinationFetchingService+Publisher.swift in Sources */,
 				E7AE6A8E26B81F4F0059FB12 /* DestinationListViewController.swift in Sources */,
 				E794201A26B853F10032C12E /* Destination.swift in Sources */,
 				E7AE6A8A26B81F4F0059FB12 /* AppDelegate.swift in Sources */,

@@ -32,17 +32,7 @@ extension DestinationDetailsViewController {
             let viewController = DestinationDetailsViewController(
                 viewModel: .init(
                     getDestinationDetails: { [destinationFetchingService, destinationID] in
-                        let future = Future<DestinationDetails, DestinationFetchingServiceError> { promise in
-                            destinationFetchingService.getDestinationDetails(for: destinationID) { result in
-                                switch result {
-                                case .success(let destinationDetails):
-                                    promise(.success(destinationDetails))
-                                case .failure(let error):
-                                    promise(.failure(error))
-                                }
-                            }
-                        }
-                        return future.eraseToAnyPublisher()
+                        destinationFetchingService.getDestinationDetailsPublisher(for: destinationID)
                     },
                     saveDestination: { [recentDestinationsService] destination in
                         try recentDestinationsService.saveDestination(destination)
