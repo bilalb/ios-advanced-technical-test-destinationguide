@@ -164,11 +164,10 @@
 			isa = PBXGroup;
 			children = (
 				9C2A0F0F28A6B42C001FA4E1 /* AnyDestinationsViewModelIO.swift */,
-				9C2F4CAA28A7DDFE0059AF74 /* Cell */,
 				E7AE6A8D26B81F4F0059FB12 /* DestinationsViewController.swift */,
-				9C2A0F0D28A6B22F001FA4E1 /* DestinationsViewController.ViewModel.swift */,
 				9C2FCAE128A944050054AF57 /* DestinationsViewController.ViewModel.SectionModel.swift */,
-				9C2A0F0528A6A3E4001FA4E1 /* SectionHeader.swift */,
+				9C2A0F0D28A6B22F001FA4E1 /* DestinationsViewController.ViewModel.swift */,
+				9C67FAF128AC016F00E4F3E9 /* Views */,
 			);
 			path = List;
 			sourceTree = "<group>";
@@ -210,14 +209,14 @@
 			path = List;
 			sourceTree = "<group>";
 		};
-		9C2F4CAA28A7DDFE0059AF74 /* Cell */ = {
+		9C2F4CAA28A7DDFE0059AF74 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
 				9C2F4CAD28A7F8980059AF74 /* Destination */,
 				9CC8F8FF28AA8DC000EFE1EB /* NoSearchResult */,
 				9C2F4CAE28A7F89F0059AF74 /* RecentDestination */,
 			);
-			path = Cell;
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		9C2F4CAD28A7F8980059AF74 /* Destination */ = {
@@ -268,6 +267,15 @@
 				9C2FCAE828A968EB0054AF57 /* DestinationStore.swift */,
 			);
 			path = Stores;
+			sourceTree = "<group>";
+		};
+		9C67FAF128AC016F00E4F3E9 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9C2F4CAA28A7DDFE0059AF74 /* Cells */,
+				9C2A0F0528A6A3E4001FA4E1 /* SectionHeader.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		9CC8F8FF28AA8DC000EFE1EB /* NoSearchResult */ = {
