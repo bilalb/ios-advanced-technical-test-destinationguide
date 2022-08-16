@@ -1,5 +1,5 @@
 //
-//  DestinationListViewController.Coordinator.swift
+//  DestinationDetailsViewController.Coordinator.swift
 //  DestinationGuide
 //
 //  Created by Bilal on 16/08/2022.
@@ -8,44 +8,46 @@
 import Combine
 import UIKit
 
-extension DestinationListViewController {
+extension DestinationDetailsViewController {
     final class Coordinator: DestinationGuide.Coordinator {
         private let navigationController: UINavigationController
+        private let destinationFetchingService: DestinationFetchingService
+        private let destinationID: Destination.ID
         private let recentDestinationsService: RecentDestinationsService
         private let destinationStore: DestinationStore
-        private let destinationFetchingService: DestinationFetchingService
-        private var destinationDetailsCoordinator: DestinationDetailsViewController.Coordinator?
 
         init(navigationController: UINavigationController,
+             destinationFetchingService: DestinationFetchingService,
+             destinationID: Destination.ID,
              recentDestinationsService: RecentDestinationsService,
-             destinationStore: DestinationStore,
-             destinationFetchingService: DestinationFetchingService) {
+             destinationStore: DestinationStore) {
             self.navigationController = navigationController
+            self.destinationFetchingService = destinationFetchingService
+            self.destinationID = destinationID
             self.recentDestinationsService = recentDestinationsService
             self.destinationStore = destinationStore
-            self.destinationFetchingService = destinationFetchingService
         }
 
         func start() {
-            let viewController = DestinationListViewController(
+            let viewController = DestinationDetailsViewController(
                 viewModel: .init(
-                    recentDestinations: { [recentDestinationsService] in
-                        recentDestinationsService.recentDestinations()
-                    },
-                    refreshRecentDestinations: destinationStore.refreshRecentDestinations.eraseToAnyPublisher(),
-                    getDestinations: { [destinationFetchingService] in
-                        let future = Future<Set<Destination>, DestinationFetchingServiceError> { promise in
-                            destinationFetchingService.getDestinations { result in
+                    getDestinationDetails: { [destinationFetchingService, destinationID] in
+                        let future = Future<DestinationDetails, DestinationFetchingServiceError> { promise in
+                            destinationFetchingService.getDestinationDetails(for: destinationID) { result in
                                 switch result {
-                                case .success(let destinations):
-                                    promise(.success(destinations))
+                                case .success(let destinationDetails):
+                                    promise(.success(destinationDetails))
                                 case .failure(let error):
                                     promise(.failure(error))
                                 }
                             }
                         }
                         return future.eraseToAnyPublisher()
-                    }
+                    },
+                    saveDestination: { [recentDestinationsService] destination in
+                        try recentDestinationsService.saveDestination(destination)
+                    },
+                    saveCompletedSubject: destinationStore.refreshRecentDestinations
                 )
             )
             viewController.coordinator = self
@@ -66,17 +68,6 @@ extension DestinationListViewController {
             alert.addAction(action)
 
             navigationController.showDetailViewController(alert, sender: self)
-        }
-
-        func selectDestination(with id: Destination.ID) {
-            destinationDetailsCoordinator = .init(
-                navigationController: navigationController,
-                destinationFetchingService: destinationFetchingService,
-                destinationID: id,
-                recentDestinationsService: recentDestinationsService,
-                destinationStore: destinationStore
-            )
-            destinationDetailsCoordinator?.start()
         }
     }
 }

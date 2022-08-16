@@ -12,6 +12,7 @@ import WebKit
 final class DestinationDetailsViewController: UIViewController {
     private let viewModel: ViewModel
     private var cancellables: Set<AnyCancellable> = []
+    weak var coordinator: Coordinator?
 
     init(viewModel: ViewModel) {
         self.viewModel = viewModel
@@ -38,7 +39,6 @@ final class DestinationDetailsViewController: UIViewController {
         return spinner
     }()
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -59,12 +59,7 @@ extension DestinationDetailsViewController {
         viewModel.presentError
             .sink { [weak self, activityIndicator] error in
                 activityIndicator.stopAnimating()
-
-                let alert = UIAlertController(title: "Erreur", message: error.localizedDescription, preferredStyle: .alert)
-                alert.view.tintColor = UIColor.evaneos(color: .veraneos)
-                alert.addAction(UIAlertAction(title: "Annuler", style: .cancel))
-
-                self?.showDetailViewController(alert, sender: self)
+                self?.coordinator?.showError(error)
             }
             .store(in: &cancellables)
 

@@ -280,29 +280,7 @@ extension DestinationListViewController: UICollectionViewDelegate {
             return
         }
 
-        let viewController = DestinationDetailsViewController(
-            viewModel: .init(
-                getDestinationDetails: {
-                    let future = Future<DestinationDetails, DestinationFetchingServiceError> { promise in
-                        DestinationFetchingService().getDestinationDetails(for: cellModel.id) { result in
-                            switch result {
-                            case .success(let destinationDetails):
-                                promise(.success(destinationDetails))
-                            case .failure(let error):
-                                promise(.failure(error))
-                            }
-                        }
-                    }
-                    return future.eraseToAnyPublisher()
-                },
-                saveDestination: { destination in
-                    let service = RecentDestinationsService()
-                    return try service.saveDestination(destination)
-                },
-                saveCompletedSubject: DestinationStore.shared.refreshRecentDestinations
-            )
-        )
-        show(viewController, sender: self)
+        coordinator?.selectDestination(with: cellModel.id)
     }
 }
 
