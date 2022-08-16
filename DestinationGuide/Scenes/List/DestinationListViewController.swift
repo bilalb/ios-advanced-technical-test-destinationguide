@@ -11,6 +11,7 @@ import UIKit
 final class DestinationListViewController: UIViewController {
     private let viewModel: ViewModel
     private var cancellables: Set<AnyCancellable> = []
+    weak var coordinator: Coordinator?
 
     init(viewModel: ViewModel) {
         self.viewModel = viewModel
@@ -117,14 +118,9 @@ final class DestinationListViewController: UIViewController {
 private extension DestinationListViewController {
     func bindViewModel() {
         viewModel.presentError
-            .sink { [weak self, activityIndicator] error in
+            .sink { [activityIndicator, coordinator] error in
                 activityIndicator.stopAnimating()
-
-                let alert = UIAlertController(title: "Erreur", message: error.localizedDescription, preferredStyle: .alert)
-                alert.view.tintColor = UIColor.evaneos(color: .veraneos)
-                alert.addAction(UIAlertAction(title: "Annuler", style: .cancel))
-
-                self?.showDetailViewController(alert, sender: self)
+                coordinator?.showError(error)
             }
             .store(in: &cancellables)
 
@@ -132,9 +128,9 @@ private extension DestinationListViewController {
             .compactMap { $0 }
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
-            .sink { [collectionView, activityIndicator] _ in
-                collectionView.reloadData()
+            .sink { [activityIndicator, collectionView] _ in
                 activityIndicator.stopAnimating()
+                collectionView.reloadData()
             }
             .store(in: &cancellables)
     }
@@ -284,29 +280,7 @@ extension DestinationListViewController: UICollectionViewDelegate {
             return
         }
 
-        let viewController = DestinationDetailsViewController(
-            viewModel: .init(
-                getDestinationDetails: {
-                    let future = Future<DestinationDetails, DestinationFetchingServiceError> { promise in
-                        DestinationFetchingService().getDestinationDetails(for: cellModel.id) { result in
-                            switch result {
-                            case .success(let destinationDetails):
-                                promise(.success(destinationDetails))
-                            case .failure(let error):
-                                promise(.failure(error))
-                            }
-                        }
-                    }
-                    return future.eraseToAnyPublisher()
-                },
-                saveDestination: { destination in
-                    let service = RecentDestinationsService()
-                    return try service.saveDestination(destination)
-                },
-                saveCompletedSubject: DestinationStore.shared.refreshRecentDestinations
-            )
-        )
-        show(viewController, sender: self)
+        coordinator?.selectDestination(with: cellModel.id)
     }
 }
 
