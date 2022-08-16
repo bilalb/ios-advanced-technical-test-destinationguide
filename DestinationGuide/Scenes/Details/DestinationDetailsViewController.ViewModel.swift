@@ -1,5 +1,5 @@
 //
-//  DestinationDetailsController.ViewModel.swift
+//  DestinationDetailsViewController.ViewModel.swift
 //  DestinationGuide
 //
 //  Created by Bilal on 13/08/2022.
@@ -14,7 +14,7 @@ protocol DestinationDetailsViewModelIO {
     var saveCompletedSubject: PassthroughSubject<Void, Never> { get }
 }
 
-extension DestinationDetailsController {
+extension DestinationDetailsViewController {
     final class ViewModel {
         private let io: DestinationDetailsViewModelIO
         private var cancellables: Set<AnyCancellable> = []
@@ -44,31 +44,10 @@ extension DestinationDetailsController {
                 .map { $0 }
                 .assign(to: &$destinationDetails)
         }
-
-        private func bindDestinationDetails() {
-            $destinationDetails
-                .map { $0?.name }
-                .assign(to: &$title)
-
-            $destinationDetails
-                .compactMap(\.?.url)
-                .map { URLRequest(url: $0) }
-                .assign(to: &$webViewURLRequest)
-
-            $destinationDetails
-                .compactMap { $0 }
-                .sink { [io] in
-                    let addedToRecentDestinations = try? io.saveDestination($0)
-                    if addedToRecentDestinations == true {
-                        io.saveCompletedSubject.send()
-                    }
-                }
-                .store(in: &cancellables)
-        }
     }
 }
 
-extension DestinationDetailsController.ViewModel {
+extension DestinationDetailsViewController.ViewModel {
     convenience init(getDestinationDetails: @escaping () -> AnyPublisher<DestinationDetails, DestinationFetchingServiceError>,
                      saveDestination: @escaping (DestinationDetails) throws -> Bool,
                      saveCompletedSubject: PassthroughSubject<Void, Never>) {
@@ -79,5 +58,30 @@ extension DestinationDetailsController.ViewModel {
                 saveCompletedSubject: saveCompletedSubject
             )
         )
+    }
+}
+
+// MARK: - Private Bindings Methods
+
+private extension DestinationDetailsViewController.ViewModel {
+    func bindDestinationDetails() {
+        $destinationDetails
+            .map { $0?.name }
+            .assign(to: &$title)
+
+        $destinationDetails
+            .compactMap(\.?.url)
+            .map { URLRequest(url: $0) }
+            .assign(to: &$webViewURLRequest)
+
+        $destinationDetails
+            .compactMap { $0 }
+            .sink { [io] in
+                let addedToRecentDestinations = try? io.saveDestination($0)
+                if addedToRecentDestinations == true {
+                    io.saveCompletedSubject.send()
+                }
+            }
+            .store(in: &cancellables)
     }
 }

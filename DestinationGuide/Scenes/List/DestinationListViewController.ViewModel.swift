@@ -1,5 +1,5 @@
 //
-//  DestinationsViewController.ViewModel.swift
+//  DestinationListViewController.ViewModel.swift
 //  DestinationGuide
 //
 //  Created by Bilal on 12/08/2022.
@@ -8,15 +8,15 @@
 import Combine
 import Foundation
 
-protocol DestinationsViewModelIO {
+protocol DestinationListViewModelIO {
     func recentDestinations() -> AnyPublisher<[DestinationDetails]?, Error>
     var refreshRecentDestinations: AnyPublisher<Void, Never> { get }
     func getDestinations() -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>
 }
 
-extension DestinationsViewController {
+extension DestinationListViewController {
     final class ViewModel {
-        private let io: DestinationsViewModelIO
+        private let io: DestinationListViewModelIO
         private var cancellables: Set<AnyCancellable> = []
 
         @Published private var allDestinations: [Destination]?
@@ -30,7 +30,7 @@ extension DestinationsViewController {
             presentErrorSubject.eraseToAnyPublisher()
         }
 
-        init(io: DestinationsViewModelIO) {
+        init(io: DestinationListViewModelIO) {
             self.io = io
 
             bindCellModels()
@@ -59,12 +59,12 @@ extension DestinationsViewController {
     }
 }
 
-extension DestinationsViewController.ViewModel {
+extension DestinationListViewController.ViewModel {
     convenience init(recentDestinations: @escaping () -> AnyPublisher<[DestinationDetails]?, Error>,
                      refreshRecentDestinations: AnyPublisher<Void, Never>,
                      getDestinations: @escaping () -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>) {
         self.init(
-            io: AnyDestinationsViewModelIO(
+            io: AnyDestinationListViewModelIO(
                 recentDestinations: recentDestinations,
                 refreshRecentDestinations: refreshRecentDestinations,
                 getDestinations: getDestinations
@@ -73,7 +73,9 @@ extension DestinationsViewController.ViewModel {
     }
 }
 
-private extension DestinationsViewController.ViewModel {
+// MARK: - Private Loading Methods
+
+private extension DestinationListViewController.ViewModel {
     func loadRecentDestinations() {
         io.recentDestinations()
             .receive(on: DispatchQueue.main)
@@ -108,7 +110,11 @@ private extension DestinationsViewController.ViewModel {
             }
             .assign(to: &$allCellModels)
     }
+}
 
+// MARK: - Private Bindings Methods
+
+private extension DestinationListViewController.ViewModel {
     func bindCellModels() {
         $recentCellModels
             .combineLatest($allCellModels.compactMap { $0 })

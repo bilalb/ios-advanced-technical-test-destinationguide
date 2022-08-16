@@ -53,6 +53,8 @@ struct RecentDestinationsService {
     }
 }
 
+//  MARK: - Private Methods
+
 private extension RecentDestinationsService {
     func recentDestinationsArray() throws -> [DestinationDetails]? {
         let dataArray = userDefaults.array(forKey: key) as? [Data]

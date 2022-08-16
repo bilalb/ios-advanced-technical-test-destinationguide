@@ -17,7 +17,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let window = UIWindow(windowScene: windowScene)
             let service = DestinationFetchingService()
             window.rootViewController = UINavigationController(
-                rootViewController: DestinationsViewController(
+                rootViewController: DestinationListViewController(
                     viewModel: .init(
                         recentDestinations: {
                             let service = RecentDestinationsService()

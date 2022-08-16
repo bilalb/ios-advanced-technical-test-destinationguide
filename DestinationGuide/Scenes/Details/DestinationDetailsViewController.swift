@@ -9,7 +9,7 @@ import Combine
 import UIKit
 import WebKit
 
-final class DestinationDetailsController: UIViewController {
+final class DestinationDetailsViewController: UIViewController {
     private let viewModel: ViewModel
     private var cancellables: Set<AnyCancellable> = []
 
@@ -50,10 +50,12 @@ final class DestinationDetailsController: UIViewController {
         bindViewModel()
         viewModel.getDestinationDetails()
     }
-    
-    //  MARK: - Functions
+}
 
-    private func bindViewModel() {
+//  MARK: - Private Binding Methods
+
+extension DestinationDetailsViewController {
+    func bindViewModel() {
         viewModel.presentError
             .sink { [weak self, activityIndicator] error in
                 activityIndicator.stopAnimating()
@@ -75,29 +77,32 @@ final class DestinationDetailsController: UIViewController {
             .sink { [webView] in webView.load($0) }
             .store(in: &cancellables)
     }
+}
 
-    private func addView() {
+//  MARK: - Private UI Methods
+
+extension DestinationDetailsViewController {
+    func addView() {
         self.view.addSubview(self.webView)
         self.view.addSubview(self.activityIndicator)
         self.constraintInit()
     }
-    
-    private func constraintInit() {
+
+    func constraintInit() {
         NSLayoutConstraint.activate([
             self.webView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 0),
             self.webView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 0),
             self.webView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: 0),
             self.webView.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: 0)
         ])
-        
+
         self.activityIndicator.center = self.view.center
     }
 }
 
-//  MARK: - WKWebView delegate
+//  MARK: - WKNavigationDelegate
 
-extension DestinationDetailsController: WKNavigationDelegate {
-    
+extension DestinationDetailsViewController: WKNavigationDelegate {
     private func showActivityIndicator(show: Bool) {
         if show {
             activityIndicator.startAnimating()

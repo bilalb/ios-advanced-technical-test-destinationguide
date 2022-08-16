@@ -8,10 +8,9 @@
 import UIKit
 
 final class DestinationCell: UICollectionViewCell {
-
     private var dataTask: URLSessionDataTask?
 
-    //  MARK: - Components
+    // MARK: - Components
 
     private let labelDestination: UILabel = {
         let label = UILabel()
@@ -69,7 +68,7 @@ final class DestinationCell: UICollectionViewCell {
         return gradientView
     }()
 
-    //  MARK: - Init
+    // MARK: - Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -94,7 +93,7 @@ final class DestinationCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    //  MARK: - Override func
+    // MARK: - Override func
 
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -105,20 +104,6 @@ final class DestinationCell: UICollectionViewCell {
         self.labelDestination.text = nil
 
         self.dataTask?.cancel()
-    }
-
-    private func downloadImage(url: URL) {
-        self.dataTask?.resume()
-
-        self.dataTask = URLSession.shared.dataTask(with: URLRequest(url: url), completionHandler: { data, _, _  in
-            if let data = data {
-                DispatchQueue.main.async {
-                    self.imageViewBackground.image = UIImage(data: data)
-                }
-            }
-        })
-
-        self.dataTask?.resume()
     }
 
     //  MARK: - Function
@@ -132,8 +117,30 @@ final class DestinationCell: UICollectionViewCell {
 
         self.dataTask?.resume()
     }
+}
 
-    private func shadow() {
+// MARK: - Private Download Image Methods
+
+private extension DestinationCell {
+    func downloadImage(url: URL) {
+        self.dataTask?.resume()
+
+        self.dataTask = URLSession.shared.dataTask(with: URLRequest(url: url), completionHandler: { data, _, _  in
+            if let data = data {
+                DispatchQueue.main.async {
+                    self.imageViewBackground.image = UIImage(data: data)
+                }
+            }
+        })
+
+        self.dataTask?.resume()
+    }
+}
+
+// MARK: - Private UI Methods
+
+private extension DestinationCell {
+    func shadow() {
         layer.backgroundColor = UIColor.clear.cgColor
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 4.0)
@@ -141,8 +148,7 @@ final class DestinationCell: UICollectionViewCell {
         layer.shadowRadius = 4.0
     }
 
-    private func addView() {
-
+    func addView() {
         self.addSubview(labelTag)
         self.addSubview(labelDestination)
         self.addSubview(stackViewRating)
@@ -150,7 +156,7 @@ final class DestinationCell: UICollectionViewCell {
         self.constraintInit()
     }
 
-    private func configureStackView(rating: Int) {
+    func configureStackView(rating: Int) {
         var stars = [UIImageView]()
 
         for i in 0..<5 {
@@ -171,7 +177,7 @@ final class DestinationCell: UICollectionViewCell {
         }
     }
 
-    private func constraintInit() {
+    func constraintInit() {
         NSLayoutConstraint.activate([
             self.labelTag.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 16),
             self.labelTag.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 16),
@@ -185,5 +191,4 @@ final class DestinationCell: UICollectionViewCell {
             self.labelDestination.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 16)
         ])
     }
-
 }

@@ -8,7 +8,7 @@
 import UIKit
 
 final class RecentDestinationCell: UICollectionViewCell {
-    //  MARK: - Components
+    // MARK: - Components
 
     // `UIButton` allows to configure `contentInsets` unlike `UILabel`.
     private let nameLabel: UIButton = {
@@ -29,7 +29,7 @@ final class RecentDestinationCell: UICollectionViewCell {
         return button
     }()
 
-    //  MARK: - Init
+    // MARK: - Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -42,18 +42,22 @@ final class RecentDestinationCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    //  MARK: - Function
+    // MARK: - Function
 
     func setupCell(viewModel: ViewModel) {
         nameLabel.setTitle(viewModel.name, for: .normal)
     }
+}
 
-    private func addView() {
+// MARK: - Private Methods
+
+private extension RecentDestinationCell {
+    func addView() {
         self.addSubview(nameLabel)
         self.constraintInit()
     }
 
-    private func constraintInit() {
+    func constraintInit() {
         NSLayoutConstraint.activate([
             leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
             trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor),

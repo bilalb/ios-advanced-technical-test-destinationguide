@@ -17,7 +17,7 @@ final class DestinationDetailsViewModelTests: XCTestCase {
         let fetchExpectation = XCTestExpectation(description: "destination details fetch occurs")
         let saveExpectation = XCTestExpectation(description: "save to recent destinations occurs")
 
-        let sut = DestinationDetailsController.ViewModel(
+        let sut = DestinationDetailsViewController.ViewModel(
             getDestinationDetails: {
                 fetchExpectation.fulfill()
 
@@ -57,7 +57,7 @@ final class DestinationDetailsViewModelTests: XCTestCase {
 
         let saveCompletedSubject = PassthroughSubject<Void, Never>()
 
-        let sut = DestinationDetailsController.ViewModel(
+        let sut = DestinationDetailsViewController.ViewModel(
             getDestinationDetails: {
                 Fail(error: DestinationFetchingServiceError.destinationNotFound)
                     .eraseToAnyPublisher()
@@ -102,7 +102,7 @@ final class DestinationDetailsViewModelTests: XCTestCase {
 
         let saveCompletedSubject = PassthroughSubject<Void, Never>()
 
-        let sut = DestinationDetailsController.ViewModel(
+        let sut = DestinationDetailsViewController.ViewModel(
             getDestinationDetails: {
                 return Just(DestinationDetails.placeholder)
                     .setFailureType(to: DestinationFetchingServiceError.self)
@@ -130,7 +130,7 @@ final class DestinationDetailsViewModelTests: XCTestCase {
 
         let saveCompletedSubject = PassthroughSubject<Void, Never>()
 
-        let sut = DestinationDetailsController.ViewModel(
+        let sut = DestinationDetailsViewController.ViewModel(
             getDestinationDetails: {
                 return Just(DestinationDetails.placeholder)
                     .setFailureType(to: DestinationFetchingServiceError.self)

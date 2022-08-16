@@ -8,7 +8,7 @@
 import UIKit
 
 final class NoSearchResultCell: UICollectionViewCell {
-    //  MARK: - Components
+    // MARK: - Components
 
     private let label: UILabel = {
         let label = UILabel()
@@ -20,7 +20,7 @@ final class NoSearchResultCell: UICollectionViewCell {
         return label
     }()
 
-    //  MARK: - Init
+    // MARK: - Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -33,15 +33,17 @@ final class NoSearchResultCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
-    //  MARK: - Function
+// MARK: - Private Methods
 
-    private func addView() {
+private extension NoSearchResultCell {
+    func addView() {
         self.addSubview(label)
         self.constraintInit()
     }
 
-    private func constraintInit() {
+    func constraintInit() {
         NSLayoutConstraint.activate([
             leadingAnchor.constraint(equalTo: label.leadingAnchor),
             trailingAnchor.constraint(equalTo: label.trailingAnchor),
@@ -50,6 +52,8 @@ final class NoSearchResultCell: UICollectionViewCell {
         ])
     }
 }
+
+// MARK: - ViewModel
 
 extension NoSearchResultCell {
     struct ViewModel {}
