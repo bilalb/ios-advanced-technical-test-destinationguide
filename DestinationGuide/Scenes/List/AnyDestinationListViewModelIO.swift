@@ -1,5 +1,5 @@
 //
-//  AnyDestinationsViewModelIO.swift
+//  AnyDestinationListViewModelIO.swift
 //  DestinationGuide
 //
 //  Created by Bilal on 12/08/2022.
@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-struct AnyDestinationsViewModelIO: DestinationsViewModelIO {
+struct AnyDestinationListViewModelIO: DestinationListViewModelIO {
     private let _recentDestinations: () -> AnyPublisher<[DestinationDetails]?, Error>
     let refreshRecentDestinations: AnyPublisher<Void, Never>
     private let _getDestinations: () -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>

@@ -1,5 +1,5 @@
 //
-//  DestinationsViewControllerTests.swift
+//  DestinationListViewControllerTests.swift
 //  DestinationGuideTests
 //
 //  Created by Bilal on 12/08/2022.
@@ -9,7 +9,7 @@
 import Combine
 import XCTest
 
-final class DestinationsViewControllerTests: XCTestCase {
+final class DestinationListViewControllerTests: XCTestCase {
     private var cancellables: Set<AnyCancellable> = []
 
     func test_loadsDestinations_onViewDidLoad() {
@@ -23,7 +23,7 @@ final class DestinationsViewControllerTests: XCTestCase {
 
         let getDestinationsExpectation = XCTestExpectation(description: "gets destinations")
 
-        let sut = DestinationsViewController(
+        let sut = DestinationListViewController(
             viewModel: .init(
                 recentDestinations: {
                     recentDestinationsExpectation.fulfill()

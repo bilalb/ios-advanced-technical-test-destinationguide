@@ -1,5 +1,5 @@
 //
-//  DestinationsViewModelTests.swift
+//  DestinationListViewModelTests.swift
 //  DestinationGuideTests
 //
 //  Created by Bilal on 12/08/2022.
@@ -9,7 +9,7 @@
 import Combine
 import XCTest
 
-final class DestinationsViewModelTests: XCTestCase {
+final class DestinationListViewModelTests: XCTestCase {
     private var cancellables: Set<AnyCancellable> = []
 
     func test_loadDestinations_sortsResponse() {
@@ -18,7 +18,7 @@ final class DestinationsViewModelTests: XCTestCase {
 
         let second = Destination(id: "217", name: "Z", picture: URL(string:"https://static1.evcdn.net/images/reduction/1027399_w-800_h-800_q-70_m-crop.jpg")!, tag: "Incontournable", rating: 5)
 
-        let sut = DestinationsViewController.ViewModel(
+        let sut = DestinationListViewController.ViewModel(
             recentDestinations: {
                 Just([.placeholder])
                     .setFailureType(to: Error.self)
@@ -55,7 +55,7 @@ final class DestinationsViewModelTests: XCTestCase {
 
     func test_loadDestinations_withoutRecentSection() {
         // Given
-        let sut = DestinationsViewController.ViewModel(
+        let sut = DestinationListViewController.ViewModel(
             recentDestinations: {
                 Just(nil)
                     .setFailureType(to: Error.self)
@@ -85,7 +85,7 @@ final class DestinationsViewModelTests: XCTestCase {
 
     func test_loadDestinations_triggersErrorPresentation_whenAnErrorOccurs() {
         // Given
-        let sut = DestinationsViewController.ViewModel(
+        let sut = DestinationListViewController.ViewModel(
             recentDestinations: {
                 Just([.placeholder])
                     .setFailureType(to: Error.self)
@@ -123,7 +123,7 @@ final class DestinationsViewModelTests: XCTestCase {
 
         let refreshRecentDestinations = PassthroughSubject<Void, Never>()
 
-        let sut = DestinationsViewController.ViewModel(
+        let sut = DestinationListViewController.ViewModel(
             recentDestinations: {
                 expectation.fulfill()
                 return Just(nil)

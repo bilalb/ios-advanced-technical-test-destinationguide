@@ -1,5 +1,5 @@
 //
-//  DestinationsViewController.swift
+//  DestinationListViewController.swift
 //  DestinationGuide
 //
 //  Created by Alexandre Guibert1 on 02/08/2021.
@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-final class DestinationsViewController: UIViewController {
+final class DestinationListViewController: UIViewController {
     private let viewModel: ViewModel
     private var cancellables: Set<AnyCancellable> = []
 
@@ -114,7 +114,7 @@ final class DestinationsViewController: UIViewController {
 
 // MARK: - Private Binding Methods
 
-private extension DestinationsViewController {
+private extension DestinationListViewController {
     func bindViewModel() {
         viewModel.presentError
             .sink { [weak self, activityIndicator] error in
@@ -142,7 +142,7 @@ private extension DestinationsViewController {
 
 // MARK: - Private Collection View Layout Methods
 
-private extension DestinationsViewController {
+private extension DestinationListViewController {
     func makeRecentSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .estimated(1),
@@ -231,7 +231,7 @@ private extension DestinationsViewController {
 
 // MARK: - UICollectionViewDataSource
 
-extension DestinationsViewController: UICollectionViewDataSource {
+extension DestinationListViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         viewModel.sectionModels?.count ?? 0
     }
@@ -277,7 +277,7 @@ extension DestinationsViewController: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegate
 
-extension DestinationsViewController: UICollectionViewDelegate {
+extension DestinationListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cellModel = viewModel.sectionModels?[indexPath.section].cellModels[indexPath.row] else {
             print("Unable to react to item selection at: \(indexPath), because the item does not have any related destination.")
@@ -312,7 +312,7 @@ extension DestinationsViewController: UICollectionViewDelegate {
 
 // MARK: - UISearchResultsUpdating
 
-extension DestinationsViewController: UISearchResultsUpdating {
+extension DestinationListViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text else { return }
         viewModel.filterDestinations(with: searchText)
