@@ -284,7 +284,7 @@ extension DestinationListViewController: UICollectionViewDelegate {
             return
         }
 
-        let viewController = DestinationDetailsController(
+        let viewController = DestinationDetailsViewController(
             viewModel: .init(
                 getDestinationDetails: {
                     let future = Future<DestinationDetails, DestinationFetchingServiceError> { promise in

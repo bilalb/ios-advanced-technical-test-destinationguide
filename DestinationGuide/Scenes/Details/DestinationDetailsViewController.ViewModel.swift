@@ -1,5 +1,5 @@
 //
-//  DestinationDetailsController.ViewModel.swift
+//  DestinationDetailsViewController.ViewModel.swift
 //  DestinationGuide
 //
 //  Created by Bilal on 13/08/2022.
@@ -14,7 +14,7 @@ protocol DestinationDetailsViewModelIO {
     var saveCompletedSubject: PassthroughSubject<Void, Never> { get }
 }
 
-extension DestinationDetailsController {
+extension DestinationDetailsViewController {
     final class ViewModel {
         private let io: DestinationDetailsViewModelIO
         private var cancellables: Set<AnyCancellable> = []
@@ -47,7 +47,7 @@ extension DestinationDetailsController {
     }
 }
 
-extension DestinationDetailsController.ViewModel {
+extension DestinationDetailsViewController.ViewModel {
     convenience init(getDestinationDetails: @escaping () -> AnyPublisher<DestinationDetails, DestinationFetchingServiceError>,
                      saveDestination: @escaping (DestinationDetails) throws -> Bool,
                      saveCompletedSubject: PassthroughSubject<Void, Never>) {
@@ -63,7 +63,7 @@ extension DestinationDetailsController.ViewModel {
 
 // MARK: - Private Bindings Methods
 
-private extension DestinationDetailsController.ViewModel {
+private extension DestinationDetailsViewController.ViewModel {
     func bindDestinationDetails() {
         $destinationDetails
             .map { $0?.name }

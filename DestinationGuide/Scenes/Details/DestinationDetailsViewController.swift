@@ -9,7 +9,7 @@ import Combine
 import UIKit
 import WebKit
 
-final class DestinationDetailsController: UIViewController {
+final class DestinationDetailsViewController: UIViewController {
     private let viewModel: ViewModel
     private var cancellables: Set<AnyCancellable> = []
 
@@ -54,7 +54,7 @@ final class DestinationDetailsController: UIViewController {
 
 //  MARK: - Private Binding Methods
 
-extension DestinationDetailsController {
+extension DestinationDetailsViewController {
     func bindViewModel() {
         viewModel.presentError
             .sink { [weak self, activityIndicator] error in
@@ -81,7 +81,7 @@ extension DestinationDetailsController {
 
 //  MARK: - Private UI Methods
 
-extension DestinationDetailsController {
+extension DestinationDetailsViewController {
     func addView() {
         self.view.addSubview(self.webView)
         self.view.addSubview(self.activityIndicator)
@@ -102,7 +102,7 @@ extension DestinationDetailsController {
 
 //  MARK: - WKNavigationDelegate
 
-extension DestinationDetailsController: WKNavigationDelegate {
+extension DestinationDetailsViewController: WKNavigationDelegate {
     private func showActivityIndicator(show: Bool) {
         if show {
             activityIndicator.startAnimating()
