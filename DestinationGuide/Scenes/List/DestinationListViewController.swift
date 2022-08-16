@@ -208,13 +208,13 @@ private extension DestinationListViewController {
     func makeNoResultSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .fractionalHeight(1)
+            heightDimension: .estimated(37)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(37)
+            heightDimension: .fractionalHeight(1)
         )
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: groupSize,
