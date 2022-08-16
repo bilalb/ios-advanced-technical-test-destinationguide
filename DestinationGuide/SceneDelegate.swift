@@ -17,7 +17,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window = UIWindow(windowScene: windowScene)
             coordinator = .init(
                 window: window ?? .init(),
-                rootViewController: .init()
+                rootViewController: .init(),
+                recentDestinationsService: .init(),
+                destinationStore: .shared,
+                destinationFetchingService: .init()
             )
             coordinator?.start()
         }
