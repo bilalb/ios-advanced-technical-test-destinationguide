@@ -8,12 +8,17 @@
 import UIKit
 
 final class SectionHeader: UICollectionReusableView {
+
+    // MARK: - Components
+
     private(set) lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.avertaBold(fontSize: 28)
 
         return label
     }()
+
+    // MARK: - Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)

@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-final class DestinationsViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+final class DestinationsViewController: UIViewController, UICollectionViewDelegateFlowLayout {
     private let viewModel: ViewModel
     private var cancellables: Set<AnyCancellable> = []
 
@@ -110,8 +110,12 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
         bindViewModel()
         viewModel.loadDestinations()
     }
+}
 
-    private func bindViewModel() {
+// MARK: - Private Binding Methods
+
+private extension DestinationsViewController {
+    func bindViewModel() {
         viewModel.presentError
             .sink { [weak self, activityIndicator] error in
                 activityIndicator.stopAnimating()
@@ -135,48 +139,6 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
             .store(in: &cancellables)
     }
 
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        viewModel.sectionModels?.count ?? 0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.sectionModels?[section].cellModels.count ?? 0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cellModel = viewModel.sectionModels?[indexPath.section].cellModels[indexPath.row]
-
-        switch cellModel {
-        case let cellModel as RecentDestinationCell.ViewModel:
-            if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentDestinationCell.reuseIdentifier, for: indexPath) as? RecentDestinationCell {
-                cell.setupCell(viewModel: cellModel)
-                return cell
-            }
-        case let cellModel as DestinationCell.ViewModel:
-            if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DestinationCell.reuseIdentifier, for: indexPath) as? DestinationCell {
-                cell.setupCell(viewModel: cellModel)
-                return cell
-            }
-        case is NoSearchResultCell.ViewModel:
-            return collectionView.dequeueReusableCell(withReuseIdentifier: NoSearchResultCell.reuseIdentifier, for: indexPath)
-        default:
-            break
-        }
-        return UICollectionViewCell()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        switch kind {
-        case UICollectionView.elementKindSectionHeader:
-            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SectionHeader.reuseIdentifier, for: indexPath) as! SectionHeader
-            let sectionModel = viewModel.sectionModels?[indexPath.section]
-            headerView.titleLabel.text = sectionModel?.title
-            return headerView
-        default:
-            assert(false, "Unexpected element kind")
-        }
-    }
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
         // Get the view for the first header
@@ -188,38 +150,9 @@ final class DestinationsViewController: UIViewController, UICollectionViewDataSo
                                                   withHorizontalFittingPriority: .required, // Width is fixed
                                                   verticalFittingPriority: .fittingSizeLevel) // Height can be as large as needed
     }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let cellModel = viewModel.sectionModels?[indexPath.section].cellModels[indexPath.row] else {
-            print("Unable to react to item selection at: \(indexPath), because the item does not have any related destination.")
-            return
-        }
-
-        let viewController = DestinationDetailsController(
-            viewModel: .init(
-                getDestinationDetails: {
-                    let future = Future<DestinationDetails, DestinationFetchingServiceError> { promise in
-                        DestinationFetchingService().getDestinationDetails(for: cellModel.id) { result in
-                            switch result {
-                            case .success(let destinationDetails):
-                                promise(.success(destinationDetails))
-                            case .failure(let error):
-                                promise(.failure(error))
-                            }
-                        }
-                    }
-                    return future.eraseToAnyPublisher()
-                },
-                saveDestination: { destination in
-                    let service = RecentDestinationsService()
-                    return try service.saveDestination(destination)
-                },
-                saveCompletedSubject: DestinationStore.shared.refreshRecentDestinations
-            )
-        )
-        show(viewController, sender: self)
-    }
 }
+
+// MARK: - Private Collection View Layout Methods
 
 private extension DestinationsViewController {
     func makeRecentSection() -> NSCollectionLayoutSection {
@@ -305,6 +238,87 @@ private extension DestinationsViewController {
         section.contentInsets = .init(top: 16, leading: 16, bottom: 0, trailing: 16)
 
         return section
+    }
+}
+
+// MARK: - UICollectionViewDataSource
+
+extension DestinationsViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        viewModel.sectionModels?.count ?? 0
+    }
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        viewModel.sectionModels?[section].cellModels.count ?? 0
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cellModel = viewModel.sectionModels?[indexPath.section].cellModels[indexPath.row]
+
+        switch cellModel {
+        case let cellModel as RecentDestinationCell.ViewModel:
+            if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentDestinationCell.reuseIdentifier, for: indexPath) as? RecentDestinationCell {
+                cell.setupCell(viewModel: cellModel)
+                return cell
+            }
+        case let cellModel as DestinationCell.ViewModel:
+            if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DestinationCell.reuseIdentifier, for: indexPath) as? DestinationCell {
+                cell.setupCell(viewModel: cellModel)
+                return cell
+            }
+        case is NoSearchResultCell.ViewModel:
+            return collectionView.dequeueReusableCell(withReuseIdentifier: NoSearchResultCell.reuseIdentifier, for: indexPath)
+        default:
+            break
+        }
+        return UICollectionViewCell()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        switch kind {
+        case UICollectionView.elementKindSectionHeader:
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SectionHeader.reuseIdentifier, for: indexPath) as! SectionHeader
+            let sectionModel = viewModel.sectionModels?[indexPath.section]
+            headerView.titleLabel.text = sectionModel?.title
+            return headerView
+        default:
+            assert(false, "Unexpected element kind")
+        }
+    }
+}
+
+// MARK: - UICollectionViewDelegate
+
+extension DestinationsViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let cellModel = viewModel.sectionModels?[indexPath.section].cellModels[indexPath.row] else {
+            print("Unable to react to item selection at: \(indexPath), because the item does not have any related destination.")
+            return
+        }
+
+        let viewController = DestinationDetailsController(
+            viewModel: .init(
+                getDestinationDetails: {
+                    let future = Future<DestinationDetails, DestinationFetchingServiceError> { promise in
+                        DestinationFetchingService().getDestinationDetails(for: cellModel.id) { result in
+                            switch result {
+                            case .success(let destinationDetails):
+                                promise(.success(destinationDetails))
+                            case .failure(let error):
+                                promise(.failure(error))
+                            }
+                        }
+                    }
+                    return future.eraseToAnyPublisher()
+                },
+                saveDestination: { destination in
+                    let service = RecentDestinationsService()
+                    return try service.saveDestination(destination)
+                },
+                saveCompletedSubject: DestinationStore.shared.refreshRecentDestinations
+            )
+        )
+        show(viewController, sender: self)
     }
 }
 

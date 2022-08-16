@@ -214,7 +214,7 @@
 			isa = PBXGroup;
 			children = (
 				9C2F4CAD28A7F8980059AF74 /* Destination */,
-				9CC8F8FF28AA8DC000EFE1EB /* NoSearchResultCell */,
+				9CC8F8FF28AA8DC000EFE1EB /* NoSearchResult */,
 				9C2F4CAE28A7F89F0059AF74 /* RecentDestination */,
 			);
 			path = Cell;
@@ -270,12 +270,12 @@
 			path = Stores;
 			sourceTree = "<group>";
 		};
-		9CC8F8FF28AA8DC000EFE1EB /* NoSearchResultCell */ = {
+		9CC8F8FF28AA8DC000EFE1EB /* NoSearchResult */ = {
 			isa = PBXGroup;
 			children = (
 				9CC8F90028AA8DCE00EFE1EB /* NoSearchResultCell.swift */,
 			);
-			path = NoSearchResultCell;
+			path = NoSearchResult;
 			sourceTree = "<group>";
 		};
 		E7878C1F26BACF3E00CF1DB8 /* Fonts */ = {

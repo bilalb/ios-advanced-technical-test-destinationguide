@@ -73,6 +73,8 @@ extension DestinationsViewController.ViewModel {
     }
 }
 
+// MARK: - Private Loading Methods
+
 private extension DestinationsViewController.ViewModel {
     func loadRecentDestinations() {
         io.recentDestinations()
@@ -108,7 +110,11 @@ private extension DestinationsViewController.ViewModel {
             }
             .assign(to: &$allCellModels)
     }
+}
 
+// MARK: - Private Bindings Methods
+
+private extension DestinationsViewController.ViewModel {
     func bindCellModels() {
         $recentCellModels
             .combineLatest($allCellModels.compactMap { $0 })

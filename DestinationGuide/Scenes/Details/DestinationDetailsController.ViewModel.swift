@@ -44,27 +44,6 @@ extension DestinationDetailsController {
                 .map { $0 }
                 .assign(to: &$destinationDetails)
         }
-
-        private func bindDestinationDetails() {
-            $destinationDetails
-                .map { $0?.name }
-                .assign(to: &$title)
-
-            $destinationDetails
-                .compactMap(\.?.url)
-                .map { URLRequest(url: $0) }
-                .assign(to: &$webViewURLRequest)
-
-            $destinationDetails
-                .compactMap { $0 }
-                .sink { [io] in
-                    let addedToRecentDestinations = try? io.saveDestination($0)
-                    if addedToRecentDestinations == true {
-                        io.saveCompletedSubject.send()
-                    }
-                }
-                .store(in: &cancellables)
-        }
     }
 }
 
@@ -79,5 +58,30 @@ extension DestinationDetailsController.ViewModel {
                 saveCompletedSubject: saveCompletedSubject
             )
         )
+    }
+}
+
+// MARK: - Private Bindings Methods
+
+private extension DestinationDetailsController.ViewModel {
+    func bindDestinationDetails() {
+        $destinationDetails
+            .map { $0?.name }
+            .assign(to: &$title)
+
+        $destinationDetails
+            .compactMap(\.?.url)
+            .map { URLRequest(url: $0) }
+            .assign(to: &$webViewURLRequest)
+
+        $destinationDetails
+            .compactMap { $0 }
+            .sink { [io] in
+                let addedToRecentDestinations = try? io.saveDestination($0)
+                if addedToRecentDestinations == true {
+                    io.saveCompletedSubject.send()
+                }
+            }
+            .store(in: &cancellables)
     }
 }
