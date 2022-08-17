@@ -9,11 +9,11 @@ import Combine
 import Foundation
 
 struct AnyDestinationListViewModelIO: DestinationListViewModelIO {
-    private let _recentDestinations: () -> AnyPublisher<[DestinationDetails]?, Error>
+    private let _recentDestinations: () throws -> [DestinationDetails]?
     let refreshRecentDestinations: AnyPublisher<Void, Never>
     private let _getDestinations: () -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>
 
-    init(recentDestinations: @escaping () -> AnyPublisher<[DestinationDetails]?, Error>,
+    init(recentDestinations: @escaping () throws -> [DestinationDetails]?,
          refreshRecentDestinations: AnyPublisher<Void, Never>,
          getDestinations: @escaping () -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>) {
         _recentDestinations = recentDestinations
@@ -21,8 +21,8 @@ struct AnyDestinationListViewModelIO: DestinationListViewModelIO {
         _getDestinations = getDestinations
     }
 
-    func recentDestinations() -> AnyPublisher<[DestinationDetails]?, Error> {
-        _recentDestinations()
+    func recentDestinations() throws -> [DestinationDetails]? {
+        try _recentDestinations()
     }
 
     func getDestinations() -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError> {

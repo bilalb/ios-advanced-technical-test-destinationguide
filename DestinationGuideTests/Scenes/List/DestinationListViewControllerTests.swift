@@ -27,10 +27,7 @@ final class DestinationListViewControllerTests: XCTestCase {
             viewModel: .init(
                 recentDestinations: {
                     recentDestinationsExpectation.fulfill()
-
-                    return Just([.placeholder])
-                        .setFailureType(to: Error.self)
-                        .eraseToAnyPublisher()
+                    return [.placeholder]
                 },
                 refreshRecentDestinations: refreshRecentDestinations.eraseToAnyPublisher(),
                 getDestinations: {
