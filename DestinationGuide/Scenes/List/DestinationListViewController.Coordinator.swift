@@ -30,15 +30,15 @@ extension DestinationListViewController {
             let viewController = DestinationListViewController(
                 viewModel: .init(
                     recentDestinations: { [recentDestinationsService] in
-                        recentDestinationsService.recentDestinations()
+                        try recentDestinationsService.recentDestinations()
                     },
                     refreshRecentDestinations: destinationStore.refreshRecentDestinations.eraseToAnyPublisher(),
                     getDestinations: { [destinationFetchingService] in
                         destinationFetchingService.getDestinationsPublisher()
                     }
-                )
+                ),
+                coordinator: self
             )
-            viewController.coordinator = self
             navigationController.show(viewController, sender: self)
         }
 

@@ -19,11 +19,7 @@ final class DestinationListViewModelTests: XCTestCase {
         let second = Destination(id: "217", name: "Z", picture: URL(string:"https://static1.evcdn.net/images/reduction/1027399_w-800_h-800_q-70_m-crop.jpg")!, tag: "Incontournable", rating: 5)
 
         let sut = DestinationListViewController.ViewModel(
-            recentDestinations: {
-                Just([.placeholder])
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
-            },
+            recentDestinations: { [.placeholder] },
             refreshRecentDestinations: PassthroughSubject<Void, Never>().eraseToAnyPublisher(),
             getDestinations: {
                 Just([first, second])
@@ -56,11 +52,7 @@ final class DestinationListViewModelTests: XCTestCase {
     func test_loadDestinations_withoutRecentSection() {
         // Given
         let sut = DestinationListViewController.ViewModel(
-            recentDestinations: {
-                Just(nil)
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
-            },
+            recentDestinations: { nil },
             refreshRecentDestinations: PassthroughSubject<Void, Never>().eraseToAnyPublisher(),
             getDestinations: {
                 Just([.placeholder])
@@ -86,11 +78,7 @@ final class DestinationListViewModelTests: XCTestCase {
     func test_loadDestinations_triggersErrorPresentation_whenAnErrorOccurs() {
         // Given
         let sut = DestinationListViewController.ViewModel(
-            recentDestinations: {
-                Just([.placeholder])
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
-            },
+            recentDestinations: { [.placeholder] },
             refreshRecentDestinations: PassthroughSubject<Void, Never>().eraseToAnyPublisher(),
             getDestinations: {
                 Fail(error: DestinationFetchingServiceError.destinationNotFound)
@@ -126,9 +114,7 @@ final class DestinationListViewModelTests: XCTestCase {
         let sut = DestinationListViewController.ViewModel(
             recentDestinations: {
                 expectation.fulfill()
-                return Just(nil)
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
+                return nil
             },
             refreshRecentDestinations: refreshRecentDestinations.eraseToAnyPublisher(),
             getDestinations: { fatalError("getDestinations should not be called when refreshing recent destinations") }

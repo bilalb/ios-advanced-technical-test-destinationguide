@@ -27,10 +27,7 @@ final class DestinationListViewControllerTests: XCTestCase {
             viewModel: .init(
                 recentDestinations: {
                     recentDestinationsExpectation.fulfill()
-
-                    return Just([.placeholder])
-                        .setFailureType(to: Error.self)
-                        .eraseToAnyPublisher()
+                    return [.placeholder]
                 },
                 refreshRecentDestinations: refreshRecentDestinations.eraseToAnyPublisher(),
                 getDestinations: {
@@ -40,6 +37,12 @@ final class DestinationListViewControllerTests: XCTestCase {
                         .setFailureType(to: DestinationFetchingServiceError.self)
                         .eraseToAnyPublisher()
                 }
+            ),
+            coordinator: .init(
+                navigationController: .init(),
+                recentDestinationsService: .init(),
+                destinationStore: .shared,
+                destinationFetchingService: .init()
             )
         )
 

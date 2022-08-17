@@ -9,7 +9,7 @@ import Combine
 import Foundation
 
 protocol DestinationListViewModelIO {
-    func recentDestinations() -> AnyPublisher<[DestinationDetails]?, Error>
+    func recentDestinations() throws -> [DestinationDetails]?
     var refreshRecentDestinations: AnyPublisher<Void, Never> { get }
     func getDestinations() -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>
 }
@@ -60,7 +60,7 @@ extension DestinationListViewController {
 }
 
 extension DestinationListViewController.ViewModel {
-    convenience init(recentDestinations: @escaping () -> AnyPublisher<[DestinationDetails]?, Error>,
+    convenience init(recentDestinations: @escaping () throws -> [DestinationDetails]?,
                      refreshRecentDestinations: AnyPublisher<Void, Never>,
                      getDestinations: @escaping () -> AnyPublisher<Set<Destination>, DestinationFetchingServiceError>) {
         self.init(
@@ -77,18 +77,13 @@ extension DestinationListViewController.ViewModel {
 
 private extension DestinationListViewController.ViewModel {
     func loadRecentDestinations() {
-        io.recentDestinations()
-            .receive(on: DispatchQueue.main)
-            .`catch` { [presentErrorSubject] error -> Empty in
-                presentErrorSubject.send(error)
-                return Empty(completeImmediately: true)
-            }
-            .map {
-                $0?
-                    .sorted()
-                    .map(RecentDestinationCell.ViewModel.init(destinationDetails:))
-            }
-            .assign(to: &$recentCellModels)
+        do {
+            recentCellModels = try io.recentDestinations()?
+                .sorted()
+                .map(RecentDestinationCell.ViewModel.init(destinationDetails:))
+        } catch {
+            presentErrorSubject.send(error)
+        }
     }
 
     func getDestinations() {

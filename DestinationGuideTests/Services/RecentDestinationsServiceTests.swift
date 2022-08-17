@@ -36,21 +36,12 @@ final class RecentDestinationsServiceTests: XCTestCase {
         var addedToRecentDestinations = try sut.saveDestination(.placeholder)
 
         // Then
-        XCTAssertEqual(try recentDestinationsArray()?.count, 1)
-        XCTAssertEqual(try recentDestinationsArray()?.first?.name, "Barbade")
+        XCTAssertEqual(try sut.recentDestinations()?.count, 1)
+        XCTAssertEqual(try sut.recentDestinations()?.first?.name, "Barbade")
         XCTAssertTrue(addedToRecentDestinations)
 
         addedToRecentDestinations = try sut.saveDestination(.placeholder)
-        XCTAssertEqual(try recentDestinationsArray()?.count, 1)
+        XCTAssertEqual(try sut.recentDestinations()?.count, 1)
         XCTAssertFalse(addedToRecentDestinations)
-    }
-}
-
-private extension RecentDestinationsServiceTests {
-    func recentDestinationsArray() throws -> [DestinationDetails]? {
-        let dataArray = userDefaults.array(forKey: key) as? [Data]
-        return try dataArray?.map { data -> DestinationDetails in
-            return try decoder.decode(DestinationDetails.self, from: data)
-        }
     }
 }

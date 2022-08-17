@@ -11,10 +11,13 @@ import UIKit
 final class DestinationListViewController: UIViewController {
     private let viewModel: ViewModel
     private var cancellables: Set<AnyCancellable> = []
-    weak var coordinator: Coordinator?
+    private weak var coordinator: Coordinator?
 
-    init(viewModel: ViewModel) {
+    init(viewModel: ViewModel,
+         coordinator: Coordinator) {
         self.viewModel = viewModel
+        self.coordinator = coordinator
+
         super.init(nibName: nil, bundle: nil)
     }
 
