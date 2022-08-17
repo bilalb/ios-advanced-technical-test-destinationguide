@@ -38,9 +38,9 @@ extension DestinationDetailsViewController {
                         try recentDestinationsService.saveDestination(destination)
                     },
                     saveCompletedSubject: destinationStore.refreshRecentDestinations
-                )
+                ),
+                coordinator: self
             )
-            viewController.coordinator = self
             navigationController.show(viewController, sender: self)
         }
 

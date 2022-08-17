@@ -40,6 +40,12 @@ final class DestinationListViewControllerTests: XCTestCase {
                         .setFailureType(to: DestinationFetchingServiceError.self)
                         .eraseToAnyPublisher()
                 }
+            ),
+            coordinator: .init(
+                navigationController: .init(),
+                recentDestinationsService: .init(),
+                destinationStore: .shared,
+                destinationFetchingService: .init()
             )
         )
 

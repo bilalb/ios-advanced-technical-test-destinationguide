@@ -36,9 +36,9 @@ extension DestinationListViewController {
                     getDestinations: { [destinationFetchingService] in
                         destinationFetchingService.getDestinationsPublisher()
                     }
-                )
+                ),
+                coordinator: self
             )
-            viewController.coordinator = self
             navigationController.show(viewController, sender: self)
         }
 
