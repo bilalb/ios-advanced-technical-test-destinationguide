@@ -78,7 +78,6 @@ final class DestinationListViewController: UIViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: SectionHeader.reuseIdentifier
         )
-        collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
         
         return collectionView
@@ -105,8 +104,6 @@ final class DestinationListViewController: UIViewController {
 
         view.backgroundColor = .white
         view.addSubview(collectionView)
-        collectionView.frame = view.frame
-        collectionView.dataSource = self
 
         view.addSubview(activityIndicator)
         activityIndicator.center = view.center
