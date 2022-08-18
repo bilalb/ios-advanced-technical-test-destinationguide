@@ -49,7 +49,7 @@ final class DestinationListViewController: UIViewController {
                 case is NoSearchResultCell.ViewModel:
                     return self?.makeNoResultSection()
                 default:
-                    preconditionFailure("unknown cellModel: \(String(describing: cellModel))")
+                    return nil
                 }
             },
             configuration: configuration
@@ -265,7 +265,7 @@ extension DestinationListViewController: UICollectionViewDataSource {
             headerView.titleLabel.text = sectionModel?.title
             return headerView
         default:
-            assert(false, "Unexpected element kind")
+            return .init()
         }
     }
 }
