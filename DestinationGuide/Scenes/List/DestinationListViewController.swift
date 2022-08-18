@@ -129,7 +129,6 @@ private extension DestinationListViewController {
 
         viewModel.$sectionModels
             .compactMap { $0 }
-            .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [activityIndicator, collectionView] _ in
                 activityIndicator.stopAnimating()

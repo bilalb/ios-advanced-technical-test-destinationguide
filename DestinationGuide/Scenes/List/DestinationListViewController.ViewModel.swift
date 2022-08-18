@@ -139,6 +139,7 @@ private extension DestinationListViewController.ViewModel {
 
                 return sectionModels
             }
+            .removeDuplicates()
             .assign(to: &$sectionModels)
     }
 
