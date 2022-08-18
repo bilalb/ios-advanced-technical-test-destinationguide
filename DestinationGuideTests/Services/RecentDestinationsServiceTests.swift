@@ -10,28 +10,22 @@ import Combine
 import XCTest
 
 final class RecentDestinationsServiceTests: XCTestCase {
-    private var userDefaults: UserDefaults!
-    private var encoder: JSONEncoder!
-    private var decoder: JSONDecoder!
-    private var key: String!
     private var sut: RecentDestinationsService!
 
     override func setUp() {
-        userDefaults = UserDefaults(suiteName: #file)!
+        let userDefaults = UserDefaults(suiteName: #file)!
         userDefaults.removePersistentDomain(forName: #file)
-
-        encoder = JSONEncoder()
-        decoder = JSONDecoder()
-        key = "recentDestinations"
 
         sut = RecentDestinationsService(
             userDefaults: userDefaults,
-            encoder: encoder,
-            decoder: decoder
+            encoder: .init(),
+            decoder: .init()
         )
     }
 
     func test_saveDestination_avoidsDuplicates() throws {
+        XCTAssertNil(try sut.recentDestinations())
+
         // When
         var addedToRecentDestinations = try sut.saveDestination(.placeholder)
 
