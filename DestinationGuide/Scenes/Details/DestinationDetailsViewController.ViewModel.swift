@@ -66,7 +66,7 @@ extension DestinationDetailsViewController.ViewModel {
 private extension DestinationDetailsViewController.ViewModel {
     func bindDestinationDetails() {
         $destinationDetails
-            .map { $0?.name }
+            .map(\.?.name)
             .assign(to: &$title)
 
         $destinationDetails
