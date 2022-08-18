@@ -49,7 +49,7 @@ final class DestinationListViewController: UIViewController {
                 case is NoSearchResultCell.ViewModel:
                     return self?.makeNoResultSection()
                 default:
-                    preconditionFailure("unknown cellModel: \(String(describing: cellModel))")
+                    return nil
                 }
             },
             configuration: configuration
@@ -78,7 +78,6 @@ final class DestinationListViewController: UIViewController {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: SectionHeader.reuseIdentifier
         )
-        collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
         
         return collectionView
@@ -105,8 +104,6 @@ final class DestinationListViewController: UIViewController {
 
         view.backgroundColor = .white
         view.addSubview(collectionView)
-        collectionView.frame = view.frame
-        collectionView.dataSource = self
 
         view.addSubview(activityIndicator)
         activityIndicator.center = view.center
@@ -129,7 +126,6 @@ private extension DestinationListViewController {
 
         viewModel.$sectionModels
             .compactMap { $0 }
-            .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [activityIndicator, collectionView] _ in
                 activityIndicator.stopAnimating()
@@ -269,7 +265,7 @@ extension DestinationListViewController: UICollectionViewDataSource {
             headerView.titleLabel.text = sectionModel?.title
             return headerView
         default:
-            assert(false, "Unexpected element kind")
+            return .init()
         }
     }
 }

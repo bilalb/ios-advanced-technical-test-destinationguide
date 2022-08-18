@@ -107,23 +107,30 @@ final class DestinationListViewModelTests: XCTestCase {
 
     func test_refreshRecentDestinations() {
         // Given
-        let expectation = XCTestExpectation(description: "load recent destinations")
+        let recentDestinationsExpectation = XCTestExpectation(description: "load recent destinations")
+
+        let getDestinationsExpectation = XCTestExpectation(description: "get destinations")
+        getDestinationsExpectation.isInverted = true
 
         let refreshRecentDestinations = PassthroughSubject<Void, Never>()
 
         let sut = DestinationListViewController.ViewModel(
             recentDestinations: {
-                expectation.fulfill()
+                recentDestinationsExpectation.fulfill()
                 return nil
             },
             refreshRecentDestinations: refreshRecentDestinations.eraseToAnyPublisher(),
-            getDestinations: { fatalError("getDestinations should not be called when refreshing recent destinations") }
+            getDestinations: {
+                getDestinationsExpectation.fulfill()
+                return Fail(error: DestinationFetchingServiceError.destinationNotFound)
+                    .eraseToAnyPublisher()
+            }
         )
 
         // When
         refreshRecentDestinations.send()
 
         // Then
-        wait(for: [expectation], timeout: 0.1)
+        wait(for: [recentDestinationsExpectation, getDestinationsExpectation], timeout: 0.1)
     }
 }

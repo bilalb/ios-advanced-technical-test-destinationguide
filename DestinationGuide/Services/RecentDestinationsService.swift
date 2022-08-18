@@ -25,7 +25,7 @@ struct RecentDestinationsService {
     /// Saves to recent destinations.
     ///
     /// Duplicated destinations are not saved.
-    /// - Parameter destination: The destination to save to recent destinations
+    /// - Parameter destination: The destination to save to recent destinations.
     /// - Returns: `true` if the destination is not duplicated and added to recent destinations. Otherwise `false`.
     func saveDestination(_ destination: DestinationDetails) throws -> Bool {
         let recentDestinations = try recentDestinations() ?? []

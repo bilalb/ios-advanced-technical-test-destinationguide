@@ -59,9 +59,9 @@ final class DestinationDetailsViewController: UIViewController {
 extension DestinationDetailsViewController {
     func bindViewModel() {
         viewModel.presentError
-            .sink { [weak self, activityIndicator] error in
+            .sink { [activityIndicator, coordinator] error in
                 activityIndicator.stopAnimating()
-                self?.coordinator?.showError(error)
+                coordinator?.showError(error)
             }
             .store(in: &cancellables)
 
